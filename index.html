@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IFSP Eventos - Guarulhos</title>
-    <!-- Link para o arquivo CSS externo -->
+    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts: Material Symbols Outlined -->
+    <!-- Ícones Google -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
 
 <div id="app-container">
     
-    <!-- TOPO (Header dinâmico) -->
+    <!-- HEADER -->
     <header id="main-header" class="hidden">
         <div style="display: flex; align-items: center;">
             <button class="back-btn hidden" id="btn-back" onclick="goBack()">
@@ -25,32 +25,59 @@
             </div>
         </div>
         <div class="header-actions">
-            <!-- Ícone de Notificação -->
             <button onclick="toggleNotifications()" class="icon-btn" style="position: relative;">
                 <span class="material-symbols-outlined">notifications</span>
                 <span id="notif-badge" class="badge hidden">0</span>
             </button>
-            
-            <!-- Menu Usuario -->
-            <span id="user-name-display" style="font-size: 0.8rem; font-weight: bold; vertical-align: middle; margin-left: 8px; margin-right: 8px;">Visitante</span>
-            
-            <!-- Botão Sair (Logout) -->
+            <span id="user-name-display" class="user-display-name">Visitante</span>
             <button onclick="doLogout()" title="Sair" class="icon-btn">
                 <span class="material-symbols-outlined">logout</span>
             </button>
         </div>
     </header>
 
-    <!-- MODAL DE NOTIFICAÇÕES -->
+    <!-- ================= MODAIS ================= -->
+
+    <!-- Modal Notificações -->
     <div id="modal-notifications" class="modal-overlay hidden" onclick="if(event.target === this) toggleNotifications()">
         <div class="modal-content">
-            <h3>Notificações</h3>
-            <div id="notifications-list">
-                <!-- Inserido via JS -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3>Notificações</h3>
+                <span class="material-symbols-outlined" onclick="toggleNotifications()" style="cursor:pointer; color:#666;">close</span>
             </div>
-            <button class="btn btn-secondary" onclick="toggleNotifications()">Fechar</button>
+            <div id="notifications-list"></div>
         </div>
     </div>
+
+    <!-- Modal Seleção de Time -->
+    <div id="modal-team-select" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Escolha um Time</h3>
+            <p class="text-small">Qual time deseja inscrever nesta competição?</p>
+            <div id="team-select-list" style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0;"></div>
+            <button class="btn btn-secondary" onclick="closeTeamSelect()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal Gerar Chaves (HU 09) -->
+    <div id="modal-generate-brackets" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Gerar Chaves</h3>
+            <p class="text-small" style="margin-bottom: 15px;">Atenção: Isso irá substituir a tabela de jogos atual.</p>
+            <div class="form-group">
+                <label>Formato da Competição</label>
+                <select id="bracket-format">
+                    <option value="MATA_MATA">Mata-mata (Eliminatórias)</option>
+                    <option value="PONTOS_CORRIDOS">Pontos Corridos (Liga)</option>
+                    <option value="GRUPOS">Fases de Grupo + Final</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="confirmGenerateBrackets()">Gerar Tabela</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('modal-generate-brackets').classList.add('hidden')" style="margin-top: 10px;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- ================= TELAS ================= -->
 
     <!-- TELA 1: LOGIN -->
     <div id="screen-login" class="view active" style="justify-content: center; background: linear-gradient(135deg, var(--ifsp-green) 0%, var(--ifsp-green-dark) 100%); color: white;">
@@ -58,11 +85,10 @@
             <h1 style="font-size: 2.5rem; margin-bottom: 10px;">IFSP</h1>
             <p>Sistema de Competições</p>
         </div>
-        
-        <div style="background: white; padding: 24px; border-radius: 16px; color: #333;">
+        <div style="background: white; padding: 24px; border-radius: 16px; color: #333; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
             <div class="form-group">
                 <label>E-mail Institucional</label>
-                <input type="email" id="login-email" placeholder="aluno@aluno.ifsp.edu.br" value="aluno@aluno.ifsp.edu.br">
+                <input type="email" id="login-email" placeholder="seu.email@ifsp.edu.br" value="aluno@aluno.ifsp.edu.br">
             </div>
             <div class="form-group">
                 <label>Senha</label>
@@ -70,112 +96,159 @@
             </div>
             <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
             <div class="text-center" style="margin-top: 15px;">
-                <a href="#" style="color: var(--ifsp-green); font-size: 0.9rem;">Esqueci minha senha</a>
+                <a href="#" onclick="forgotPassword()" style="color: var(--ifsp-green); font-size: 0.9rem; text-decoration: none;">Esqueci minha senha</a>
+            </div>
+            <div class="text-center" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                <span class="text-small">Não tem conta? </span>
+                <a href="#" onclick="navigateTo('screen-register')" style="color: var(--ifsp-green); font-weight: bold; text-decoration: none;">Cadastre-se</a>
             </div>
         </div>
-        
-        <div class="text-center" style="margin-top: 30px; font-size: 0.8rem; opacity: 0.8;">
-            Dica: Use "gestor@..." para ver funções administrativas.
+        <div class="text-center" style="margin-top: 30px; font-size: 0.75rem; opacity: 0.7;">
+            <p>Acesso Rápido para Teste:</p>
+            <p>Admin: <strong>admin@ifsp</strong> | Gestor: <strong>gestor@ifsp</strong></p>
+        </div>
+    </div>
+
+    <!-- TELA: REGISTRO (HU 05) -->
+    <div id="screen-register" class="view" style="justify-content: center;">
+        <div class="card" style="border:none; box-shadow:none; background:transparent;">
+            <h2 style="margin-bottom: 20px; color: var(--ifsp-green-dark); text-align: center;">Nova Conta</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="reg-name" required placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label>E-mail Institucional</label>
+                    <input type="email" id="reg-email" required placeholder="@ifsp.edu.br">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="reg-pass" required placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn btn-primary">Criar Conta</button>
+                <button type="button" class="btn btn-secondary" onclick="navigateTo('screen-login')">Voltar ao Login</button>
+            </form>
         </div>
     </div>
 
     <!-- TELA 2: FEED (HOME) -->
     <div id="screen-feed" class="view">
-        <h2 style="margin-bottom: 16px;">Eventos Disponíveis</h2>
+        <h2 style="margin-bottom: 16px;">Eventos</h2>
         
-        <!-- Filtros -->
-        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px;">
+        <!-- Filtros de Modalidade -->
+        <div class="filters-scroll">
             <span class="tag aberto" onclick="filterEvents('all')" style="cursor:pointer;">Todos</span>
             <span class="tag" onclick="filterEvents('Futsal')" style="background:#eee; color:#555; cursor:pointer;">Futsal</span>
             <span class="tag" onclick="filterEvents('Volei')" style="background:#eee; color:#555; cursor:pointer;">Vôlei</span>
+            <span class="tag" onclick="filterEvents('Xadrez')" style="background:#eee; color:#555; cursor:pointer;">Xadrez</span>
+            <span class="tag" onclick="filterEvents('Handebol')" style="background:#eee; color:#555; cursor:pointer;">Handebol</span>
         </div>
 
-        <div id="events-list">
-            <!-- Inserido via JS -->
+        <div id="events-list" style="margin-top: 10px;">
+            <!-- Lista de Cards inserida via JS -->
         </div>
 
-        <!-- Botão Flutuante (Gestor) -->
-        <div id="fab-create" class="btn-float" onclick="navigateTo('screen-create-event')">
+        <!-- Botão Flutuante (Fab) - Apenas Gestor/Admin -->
+        <div id="fab-create" class="btn-float hidden" onclick="prepareCreateEvent()" title="Novo Evento">
             <span class="material-symbols-outlined">add</span>
         </div>
     </div>
 
-    <!-- TELA: COMUNIDADES (NOVA) -->
-    <div id="screen-communities" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h2>Comunidades</h2>
-            <button class="btn-small" onclick="navigateTo('screen-create-community')">+ Criar</button>
-        </div>
-        <p class="text-small" style="margin-bottom: 15px;">Grupos de interesse e atléticas do campus.</p>
-
-        <div id="communities-list">
-            <!-- Inserido via JS -->
+    <!-- TELA: ADMIN USUÁRIOS (HU 14) -->
+    <div id="screen-admin-users" class="view">
+        <h2 style="margin-bottom: 16px;">Gestão de Usuários</h2>
+        <p class="text-small" style="margin-bottom: 10px;">Controle de acesso e permissões.</p>
+        <div id="admin-users-list">
+            <!-- Lista de Usuários via JS -->
         </div>
     </div>
 
-    <!-- TELA: CRIAR COMUNIDADE (NOVA) -->
+    <!-- TELA: COMUNIDADES -->
+    <div id="screen-communities" class="view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2>Comunidades</h2>
+            <button class="btn-small" onclick="navigateTo('screen-create-community')">
+                <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: -2px;">add</span> Criar
+            </button>
+        </div>
+        <div id="communities-list"></div>
+    </div>
+
+    <!-- TELA: DETALHES DA COMUNIDADE (FEED SOCIAL) -->
+    <div id="screen-community-details" class="view">
+        <div id="comm-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;"></div>
+        
+        <!-- Área de Postagem -->
+        <div class="post-creator-area">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+                <div class="avatar-small" id="user-avatar-post">U</div>
+                <input type="text" id="post-input" placeholder="Compartilhe algo com o grupo..." style="flex:1; border:none; background:transparent; outline:none;">
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+                <button class="btn-small" onclick="handlePost()">Publicar</button>
+            </div>
+        </div>
+
+        <h4 style="margin-bottom: 10px; color:#555;">Discussões Recentes</h4>
+        <div id="community-feed-list"></div>
+    </div>
+
+    <!-- TELA: CRIAR COMUNIDADE -->
     <div id="screen-create-community" class="view">
         <h2 style="margin-bottom: 20px;">Nova Comunidade</h2>
         <form onsubmit="handleCreateCommunity(event)">
             <div class="form-group">
                 <label>Nome da Comunidade</label>
-                <input type="text" id="comm-name" required placeholder="Ex: Atlética da Informática">
+                <input type="text" id="comm-name" required placeholder="Ex: Torcida Organizada">
             </div>
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea id="comm-desc" rows="3" placeholder="Objetivo da comunidade..."></textarea>
+                <textarea id="comm-desc" rows="3" required placeholder="Objetivo do grupo..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Criar Comunidade</button>
         </form>
     </div>
 
-    <!-- TELA: MEUS EVENTOS E TIMES -->
+    <!-- TELA: MEUS TIMES E INSCRIÇÕES -->
     <div id="screen-my-events" class="view">
-        
-        <!-- Seção Times -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h2>Meus Times</h2>
-            <button class="btn-small" onclick="navigateTo('screen-create-team')">+ Criar Time</button>
+            <h3>Meus Times</h3>
+            <button class="btn-small" onclick="navigateTo('screen-create-team')">
+                <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: -2px;">add</span> Novo Time
+            </button>
         </div>
-        <div id="my-teams-slider" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px;">
-            <!-- Times inseridos via JS -->
-        </div>
+        
+        <!-- Slider Horizontal de Times -->
+        <div id="my-teams-slider" class="horizontal-scroll-container"></div>
 
         <div class="divider"></div>
 
-        <!-- Seção Eventos -->
-        <h2 style="margin-bottom: 16px; margin-top: 10px;">Minhas Inscrições</h2>
-        <div id="my-events-list">
-            <!-- Eventos inseridos via JS -->
-        </div>
+        <h3 style="margin-bottom: 16px; margin-top: 10px;">Minhas Inscrições Ativas</h3>
+        <div id="my-events-list"></div>
         
         <div id="empty-my-events" class="text-center hidden" style="margin-top: 40px; color: #999;">
-            <span style="font-size: 2rem;">☹</span>
-            <p>Você ainda não participa de nenhum evento.</p>
-            <button class="btn btn-secondary" onclick="navigateTo('screen-feed')">Buscar Eventos</button>
+            <span class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.5;">event_busy</span>
+            <p style="margin-top: 10px;">Você não está inscrito em eventos.</p>
+            <button class="btn btn-secondary" style="width: auto; margin-top: 15px;" onclick="navigateTo('screen-feed')">Ver Eventos Abertos</button>
         </div>
     </div>
 
     <!-- TELA: RANKING GERAL -->
     <div id="screen-ranking" class="view">
         <h2 style="margin-bottom: 16px;">Ranking Geral 🏆</h2>
-        <p class="text-small" style="margin-bottom: 15px;">Os alunos mais engajados do campus.</p>
-        
-        <div class="ranking-table" id="ranking-list">
-            <!-- Lista de ranking via JS -->
-        </div>
+        <p class="text-small" style="margin-bottom: 15px;">Pontuação baseada em participação e vitórias.</p>
+        <div class="ranking-table" id="ranking-list"></div>
     </div>
 
     <!-- TELA: PERFIL -->
     <div id="screen-profile" class="view">
         <h2 style="margin-bottom: 16px;">Meu Perfil</h2>
-        
         <div class="profile-header">
             <div class="avatar" id="profile-avatar">A</div>
-            <h3 id="profile-name">Nome do Usuário</h3>
+            <h3 id="profile-name">Usuário</h3>
             <span id="profile-email" style="color: #777; font-size: 0.9rem;">email@ifsp.edu.br</span>
             
-            <!-- Stats de Gamificação -->
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-value" id="profile-points">0</div>
@@ -187,35 +260,36 @@
                 </div>
                 <div class="stat-item" onclick="navigateTo('screen-ranking')" style="cursor: pointer;">
                     <div class="stat-value" id="profile-rank">-</div>
-                    <div class="stat-label" style="text-decoration: underline; color: var(--ifsp-green);">Ver Rank</div>
+                    <div class="stat-label" style="text-decoration: underline; color: var(--ifsp-green);">Rank</div>
                 </div>
             </div>
         </div>
 
-        <h4 style="margin-bottom: 10px;">Meus Interesses</h4>
-        <div class="interest-chips" id="interests-list">
-            <!-- Chips gerados via JS -->
-        </div>
+        <h4 style="margin-bottom: 10px;">Esportes de Interesse (HU 07)</h4>
+        <div class="interest-chips" id="interests-list"></div>
 
         <div style="margin-top: 30px;">
             <div class="divider"></div>
             <div class="text-center" style="margin-top: 20px;">
-                <span class="text-danger" onclick="doLogout()">Sair da Conta</span>
+                <button class="btn-danger-small" style="width: 100%; background-color: transparent; color: var(--ifsp-red); border: 1px solid var(--ifsp-red);" onclick="doLogout()">
+                    Sair da Conta
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- TELA 3: CADASTRO DE EVENTO -->
+    <!-- TELA: CADASTRO/EDIÇÃO DE EVENTO (HU 01, 02, 04) -->
     <div id="screen-create-event" class="view">
-        <h2 style="margin-bottom: 20px;">Novo Evento</h2>
-        <form id="form-create-event" onsubmit="handleCreateEvent(event)">
+        <h2 style="margin-bottom: 20px;" id="form-event-title">Novo Evento</h2>
+        <form id="form-create-event" onsubmit="handleSaveEvent(event)">
+            <input type="hidden" id="evt-id">
             <div class="form-group">
                 <label>Nome do Evento</label>
                 <input type="text" id="evt-nome" required placeholder="Ex: Interclasse 2024">
             </div>
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea id="evt-desc" rows="3" placeholder="Regras e detalhes..."></textarea>
+                <textarea id="evt-desc" rows="3" required placeholder="Detalhes da competição..."></textarea>
             </div>
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
@@ -227,20 +301,25 @@
                     <input type="date" id="evt-fim" required>
                 </div>
             </div>
+            
             <div class="form-group">
-                <label>Modalidade</label>
-                <select id="evt-modalidade">
-                    <option value="Futsal">Futsal</option>
-                    <option value="Volei">Vôlei</option>
-                    <option value="Xadrez">Xadrez</option>
-                    <option value="Handebol">Handebol</option>
-                </select>
+                <label>Modalidades (Múltipla Escolha - HU 04)</label>
+                <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
+                    <label class="check-label"><input type="checkbox" name="modalidades" value="Futsal"> Futsal</label>
+                    <label class="check-label"><input type="checkbox" name="modalidades" value="Volei"> Vôlei</label>
+                    <label class="check-label"><input type="checkbox" name="modalidades" value="Xadrez"> Xadrez</label>
+                    <label class="check-label"><input type="checkbox" name="modalidades" value="Handebol"> Handebol</label>
+                    <label class="check-label"><input type="checkbox" name="modalidades" value="Basquete"> Basquete</label>
+                </div>
             </div>
+
             <div class="form-group">
                 <label>Status Inicial</label>
                 <select id="evt-status">
                     <option value="INSCRICOES_ABERTAS">Inscrições Abertas</option>
                     <option value="AGUARDANDO_INICIO">Aguardando Início</option>
+                    <option value="EM_ANDAMENTO">Em Andamento</option>
+                    <option value="ENCERRADO">Encerrado</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Salvar Evento</button>
@@ -249,77 +328,60 @@
 
     <!-- TELA: CRIAR TIME -->
     <div id="screen-create-team" class="view">
-        <h2 style="margin-bottom: 20px;">Criar Time</h2>
+        <h2 style="margin-bottom: 20px;">Novo Time</h2>
         <form onsubmit="handleCreateTeam(event)">
             <div class="form-group">
                 <label>Nome do Time</label>
                 <input type="text" id="team-name" required placeholder="Ex: Os Imbatíveis">
             </div>
             <div class="form-group">
-                <label>Modalidade</label>
+                <label>Modalidade Principal</label>
                 <select id="team-modality">
                     <option value="Futsal">Futsal</option>
                     <option value="Volei">Vôlei</option>
                     <option value="Xadrez">Xadrez</option>
+                    <option value="Handebol">Handebol</option>
+                    <option value="Basquete">Basquete</option>
                 </select>
             </div>
-            <p class="text-small">Você será o capitão deste time.</p>
+            <p class="text-small" style="color:#666; margin-bottom: 15px;">Você será cadastrado automaticamente como capitão.</p>
             <button type="submit" class="btn btn-primary">Criar Time</button>
         </form>
     </div>
 
-    <!-- TELA 4: DETALHES DO EVENTO (COM ABAS E GESTÃO) -->
+    <!-- TELA 4: DETALHES DO EVENTO -->
     <div id="screen-event-details" class="view">
-        <div id="event-info-container" style="margin-bottom: 10px;">
+        <div id="event-info-container" style="margin-bottom: 15px;"></div>
+        
+        <!-- ÁREA DO GESTOR: AÇÕES -->
+        <div id="manager-actions-area" class="hidden" style="margin-bottom: 20px; display: flex; gap: 10px;">
             <!-- Inserido via JS -->
         </div>
-        
-        <!-- ÁREA DO GESTOR: APROVAÇÃO (NOVO) -->
-        <div id="admin-approval-area" class="hidden" style="background-color: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffe0b2;">
-            <h4 style="color: #e65100; margin-bottom: 8px; display: flex; align-items: center;">
-                <span class="material-symbols-outlined" style="font-size: 1.2rem; margin-right: 5px;">verified_user</span>
-                Aprovações Pendentes
+
+        <!-- ÁREA DO GESTOR: APROVAÇÃO (HU 12) -->
+        <div id="admin-approval-area" class="hidden" style="background-color: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2;">
+            <h4 style="color: #e65100; margin-bottom: 10px; display: flex; align-items: center;">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem; margin-right: 5px;">pending_actions</span>
+                Solicitações Pendentes
             </h4>
-            <div id="pending-teams-list">
-                <!-- Lista de times pendentes via JS -->
-            </div>
+            <div id="pending-teams-list"></div>
         </div>
 
-        <!-- ABAS DE NAVEGAÇÃO -->
-        <div class="tabs">
-            <div class="tab active" onclick="switchEventTab('matches')">Jogos & Tabela</div>
-            <div class="tab" onclick="switchEventTab('wall')">Mural & Social</div>
+        <div style="background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+            <strong style="color: #555;">Jogos da Competição</strong>
         </div>
-
-        <!-- CONTEÚDO ABA: JOGOS -->
-        <div id="tab-matches" class="tab-content active">
-            <div style="background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-around; text-align: center;">
-                <small style="color: #555;">Clique em um jogo para ver a súmula e votar no craque da partida.</small>
-            </div>
-            <div id="matches-list"></div>
-        </div>
-
-        <!-- CONTEÚDO ABA: MURAL (POSTS) -->
-        <div id="tab-wall" class="tab-content">
-            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="post-input" placeholder="Deixe seu comentário..." style="flex:1;">
-                <button class="btn-small" style="margin-top: 0;" onclick="handlePost()">Enviar</button>
-            </div>
-            <div id="posts-list">
-                <!-- Posts inseridos via JS -->
-            </div>
-        </div>
+        <div id="matches-list"></div>
     </div>
 
-    <!-- TELA 5: SÚMULA / VOTAÇÃO -->
+    <!-- TELA 5: SÚMULA DA PARTIDA (HU 11 e 12) -->
     <div id="screen-match-details" class="view">
         <div class="card text-center" style="margin-bottom: 20px;">
             <span class="tag andamento" style="margin-bottom: 10px;">EM ANDAMENTO</span>
-            <h2 style="color: var(--ifsp-green);" id="match-title-display">Final - Futsal</h2>
+            <h2 style="color: var(--ifsp-green);" id="match-title-display">Detalhes da Partida</h2>
             
             <div class="match-score" style="margin: 20px 0;">
                 <div style="flex: 1;">
-                    <strong style="display: block; font-size: 1.2rem;" id="team-a-display">Time A</strong>
+                    <strong style="display: block; font-size: 1.1rem;" id="team-a-display">Time A</strong>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <input type="number" id="score-a" class="team-score" value="0">
@@ -327,27 +389,28 @@
                     <input type="number" id="score-b" class="team-score" value="0">
                 </div>
                 <div style="flex: 1;">
-                    <strong style="display: block; font-size: 1.2rem;" id="team-b-display">Time B</strong>
+                    <strong style="display: block; font-size: 1.1rem;" id="team-b-display">Time B</strong>
                 </div>
             </div>
 
             <div class="form-group" style="text-align: left;">
-                <label>Ocorrências / Súmula</label>
-                <textarea rows="3" placeholder="Cartões, observações..."></textarea>
+                <label>Súmula / Ocorrências</label>
+                <textarea rows="3" placeholder="Gols, cartões, observações..."></textarea>
             </div>
 
-            <button class="btn btn-primary" onclick="saveMatchResult()">Salvar Resultado</button>
-            <button class="btn btn-secondary" style="margin-top: 10px;" onclick="approveResult()">Aprovar (Gestor)</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" style="flex:1;" onclick="saveMatchResult()">Sugerir Resultado</button>
+                <button id="btn-approve-result" class="btn btn-primary" style="flex:1;" onclick="approveResult()">Aprovar (Gestor)</button>
+            </div>
         </div>
 
-        <!-- VOTAÇÃO CRAQUE DA GALERA -->
-        <h3 style="margin-bottom: 10px;">Votação: Craque da Galera ⚽</h3>
-        <div id="voting-list">
-            <!-- Lista de jogadores para votar -->
-        </div>
+        <!-- VOTAÇÃO (Craque da Galera) -->
+        <h3 style="margin-bottom: 10px;">Craque da Galera ⚽</h3>
+        <p class="text-small" style="margin-bottom: 10px;">Vote no melhor jogador em campo!</p>
+        <div id="voting-list"></div>
     </div>
 
-    <!-- NAVEGAÇÃO INFERIOR -->
+    <!-- BARRA DE NAVEGAÇÃO -->
     <nav id="bottom-nav" class="bottom-nav hidden">
         <div class="nav-item active" id="nav-home" onclick="navigateTo('screen-feed')">
             <span class="nav-icon"><span class="material-symbols-outlined">home</span></span>
@@ -365,12 +428,16 @@
             <span class="nav-icon"><span class="material-symbols-outlined">person</span></span>
             <span>Perfil</span>
         </div>
+        <!-- HU 14: Item Admin -->
+        <div class="nav-item hidden" id="nav-admin" onclick="navigateTo('screen-admin-users')">
+            <span class="nav-icon"><span class="material-symbols-outlined">admin_panel_settings</span></span>
+            <span>Admin</span>
+        </div>
     </nav>
 
 </div>
 
-<!-- Link para o arquivo JS externo -->
+<!-- Script Principal -->
 <script src="script.js"></script>
-
 </body>
 </html>
