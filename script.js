@@ -14,6 +14,7 @@ const db = {
     matches: [
         { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 2, placarB: 1, status: "ANDAMENTO" }
     ],
+    // Times que o usuário É dono/membro
     teams: [
         { id: 1, ownerId: 2, nome: "3º Informática", modalidade: "Futsal" }, // Time da Ana
         { id: 2, ownerId: 1, nome: "Vôlei Stars", modalidade: "Volei" } // Time do Carlos
