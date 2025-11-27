@@ -12,6 +12,7 @@ const db = {
         { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 2, placarB: 1, status: "ANDAMENTO" },
         { id: 102, eventoId: 1, timeA: "1º Lic. Mat", timeB: "Eng. Automação", placarA: 0, placarB: 0, status: "AGENDADA" }
     ],
+    // Times que o usuário É dono/membro
     teams: [
         { id: 1, nome: "3º Informática", modalidade: "Futsal" },
         { id: 2, nome: "Vôlei Stars", modalidade: "Volei" }
@@ -112,7 +113,7 @@ function doLogout() {
     }
 }
 
-// --- AUTH & NOTIFICAÇÕES ---
+// --- AUTH & SENHA ---
 
 function doLogin() {
     const email = document.getElementById('login-email').value;
@@ -130,6 +131,15 @@ function doLogin() {
     document.getElementById('user-avatar-post').innerText = db.user.name.charAt(0);
     updateNotificationBadge();
     navigateTo('screen-feed');
+}
+
+function forgotPassword() {
+    const email = document.getElementById('login-email').value;
+    if (!email) {
+        alert("Por favor, preencha o campo de e-mail para recuperar sua senha.");
+        return;
+    }
+    alert(`Um link de recuperação de senha foi enviado para: ${email}\n(Verifique sua caixa de entrada)`);
 }
 
 function updateNotificationBadge() {
@@ -346,7 +356,7 @@ function handleCreateEvent(e) {
         dataInicio: document.getElementById('evt-inicio').value.split('-').reverse().join('/'),
         status: document.getElementById('evt-status').value,
         modalidade: document.getElementById('evt-modalidade').value,
-        amIParticipating: true 
+        amIParticipating: false // Criador não participa automaticamente como atleta
     };
     db.events.unshift(newEvent);
     alert("Evento cadastrado com sucesso!");
@@ -378,24 +388,70 @@ function showEventDetails(eventId) {
 
     const matchesContainer = document.getElementById('matches-list');
     matchesContainer.innerHTML = "";
-    const eventMatches = db.matches; 
-    eventMatches.forEach(match => {
-        const matchCard = document.createElement('div');
-        matchCard.className = 'card';
-        matchCard.style.borderLeftColor = '#999';
-        matchCard.onclick = () => showMatchDetails(match);
-        matchCard.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: bold;">${match.timeA}</span>
-                <span style="background: #eee; padding: 2px 8px; border-radius: 4px;">${match.placarA} x ${match.placarB}</span>
-                <span style="font-weight: bold;">${match.timeB}</span>
-            </div>
-            <div class="text-center text-small" style="margin-top: 8px;">${match.status}</div>`;
-        matchesContainer.appendChild(matchCard);
-    });
+    const eventMatches = db.matches.filter(m => m.eventoId === eventId); 
+    
+    if (eventMatches.length === 0) {
+        matchesContainer.innerHTML = "<p class='text-center text-small'>Tabela de jogos ainda não gerada.</p>";
+    } else {
+        eventMatches.forEach(match => {
+            const matchCard = document.createElement('div');
+            matchCard.className = 'card';
+            matchCard.style.borderLeftColor = '#999';
+            matchCard.onclick = () => showMatchDetails(match);
+            matchCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold;">${match.timeA}</span>
+                    <span style="background: #eee; padding: 2px 8px; border-radius: 4px;">${match.placarA} x ${match.placarB}</span>
+                    <span style="font-weight: bold;">${match.timeB}</span>
+                </div>
+                <div class="text-center text-small" style="margin-top: 8px;">${match.status}</div>`;
+            matchesContainer.appendChild(matchCard);
+        });
+    }
 
     navigateTo('screen-event-details');
 }
+
+// Nova Lógica de Inscrição de Time
+function trySubscribeTeam(eventId) {
+    const evt = db.events.find(e => e.id === eventId);
+    
+    // Filtra times do usuário que sejam da mesma modalidade do evento
+    const eligibleTeams = db.teams.filter(t => t.modalidade === evt.modalidade);
+
+    if (eligibleTeams.length === 0) {
+        alert(`Você não possui nenhum time de ${evt.modalidade}.\nCrie um time primeiro na aba "Times".`);
+        navigateTo('screen-create-team');
+        return;
+    }
+
+    // Se tiver só 1, inscreve direto (ou abre seleção se tiver mais)
+    if (eligibleTeams.length >= 1) {
+        const list = document.getElementById('team-select-list');
+        list.innerHTML = "";
+        eligibleTeams.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = "btn btn-secondary";
+            btn.style.marginBottom = "5px";
+            btn.innerText = t.nome;
+            btn.onclick = () => confirmSubscription(t.nome);
+            list.appendChild(btn);
+        });
+        document.getElementById('modal-team-select').classList.remove('hidden');
+    }
+}
+
+function closeTeamSelect() {
+    document.getElementById('modal-team-select').classList.add('hidden');
+}
+
+function confirmSubscription(teamName) {
+    // Cria solicitação pendente
+    db.pendingInscriptions.push({ id: Date.now(), teamName: teamName, eventId: currentEventId });
+    closeTeamSelect();
+    alert(`Solicitação de inscrição enviada para o time "${teamName}"!\nAguarde a aprovação do gestor.`);
+}
+
 
 function renderPendingInscriptions() {
     const container = document.getElementById('pending-teams-list');

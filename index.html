@@ -45,6 +45,18 @@
         </div>
     </div>
 
+    <!-- MODAL SELEÇÃO DE TIME (INSCRICAO) -->
+    <div id="modal-team-select" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Escolha um Time</h3>
+            <p class="text-small" style="margin-bottom: 10px;">Qual time você deseja inscrever?</p>
+            <div id="team-select-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <!-- Opções via JS -->
+            </div>
+            <button class="btn btn-secondary" onclick="closeTeamSelect()">Cancelar</button>
+        </div>
+    </div>
+
     <!-- TELA 1: LOGIN -->
     <div id="screen-login" class="view active" style="justify-content: center; background: linear-gradient(135deg, var(--ifsp-green) 0%, var(--ifsp-green-dark) 100%); color: white;">
         <div class="text-center" style="margin-bottom: 40px;">
@@ -62,7 +74,7 @@
             </div>
             <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
             <div class="text-center" style="margin-top: 15px;">
-                <a href="#" style="color: var(--ifsp-green); font-size: 0.9rem;">Esqueci minha senha</a>
+                <a href="#" onclick="forgotPassword()" style="color: var(--ifsp-green); font-size: 0.9rem;">Esqueci minha senha</a>
             </div>
         </div>
         <div class="text-center" style="margin-top: 30px; font-size: 0.8rem; opacity: 0.8;">
@@ -245,6 +257,7 @@
                     <option value="Futsal">Futsal</option>
                     <option value="Volei">Vôlei</option>
                     <option value="Xadrez">Xadrez</option>
+                    <option value="Handebol">Handebol</option>
                 </select>
             </div>
             <p class="text-small">Você será o capitão deste time.</p>
