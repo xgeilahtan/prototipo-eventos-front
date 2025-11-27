@@ -1,42 +1,12 @@
-// --- DADOS MOCKADOS (Simulando Banco de Dados) ---
+// --- DADOS MOCKADOS ---
 const db = {
     user: { 
-        name: "Visitante", 
-        email: "", 
-        role: "GUEST",
-        points: 0,
-        level: "NENHUM",
-        rank: "-",
-        interests: [] 
+        name: "Visitante", email: "", role: "GUEST", points: 0, level: "NENHUM", rank: "-", interests: [] 
     },
     events: [
-        {
-            id: 1,
-            nome: "Copa IFSP Futsal",
-            descricao: "Torneio tradicional entre os cursos técnicos.",
-            dataInicio: "10/12/2024",
-            status: "INSCRICOES_ABERTAS",
-            modalidade: "Futsal",
-            amIParticipating: true // Simulação inicial
-        },
-        {
-            id: 2,
-            nome: "Torneio de Xadrez",
-            descricao: "Valendo vaga para o JIF.",
-            dataInicio: "15/12/2024",
-            status: "AGUARDANDO_INICIO",
-            modalidade: "Xadrez",
-            amIParticipating: false
-        },
-        {
-            id: 3,
-            nome: "Vôlei de Areia Misto",
-            descricao: "Quartetos mistos na quadra de areia.",
-            dataInicio: "20/12/2024",
-            status: "EM_ANDAMENTO",
-            modalidade: "Volei",
-            amIParticipating: true 
-        }
+        { id: 1, nome: "Copa IFSP Futsal", descricao: "Torneio tradicional.", dataInicio: "10/12/2024", status: "INSCRICOES_ABERTAS", modalidade: "Futsal", amIParticipating: true },
+        { id: 2, nome: "Torneio de Xadrez", descricao: "Valendo vaga para o JIF.", dataInicio: "15/12/2024", status: "AGUARDANDO_INICIO", modalidade: "Xadrez", amIParticipating: false },
+        { id: 3, nome: "Vôlei de Areia Misto", descricao: "Quartetos mistos.", dataInicio: "20/12/2024", status: "EM_ANDAMENTO", modalidade: "Volei", amIParticipating: true }
     ],
     matches: [
         { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 2, placarB: 1, status: "ANDAMENTO" },
@@ -52,6 +22,7 @@ const db = {
         { id: 2, name: "Clube de Xadrez", members: 45, description: "Encontros semanais e torneios." },
         { id: 3, name: "Vôlei dos Servidores", members: 15, description: "Racha de vôlei toda quinta." }
     ],
+    // Posts agora vinculados a CommunityId
     posts: [
         { id: 1, communityId: 1, author: "João Silva", text: "Alguém animado para o Interclasse?", time: "10min atrás", likes: 5, dislikes: 0 },
         { id: 2, communityId: 1, author: "Maria Souza", text: "Precisamos de mais treinos antes da copa!", time: "1h atrás", likes: 12, dislikes: 1 },
@@ -82,7 +53,6 @@ const db = {
 let currentEventId = null;
 let currentCommunityId = null;
 
-// --- SISTEMA DE NAVEGAÇÃO ---
 const historyStack = [];
 
 function navigateTo(screenId, addToStack = true) {
@@ -239,6 +209,7 @@ function renderEvents(filter = 'all') {
 
 function filterEvents(type) { 
     renderEvents(type); 
+    // Visual update
     document.querySelectorAll('#screen-feed .tag').forEach(t => {
         if(t.innerText === type || (type === 'all' && t.innerText === 'Todos')) {
             t.style.backgroundColor = '#e8f5e9'; t.style.color = 'var(--ifsp-green)';
@@ -365,7 +336,7 @@ function handleDownvote(postId) {
 }
 
 
-// --- GESTÃO DE EVENTOS, TIMES E INSCRIÇÕES ---
+// --- GESTÃO & OUTROS ---
 
 function handleCreateTeam(e) {
     e.preventDefault();
@@ -398,18 +369,13 @@ function showEventDetails(eventId) {
     const evt = db.events.find(e => e.id === eventId);
     if (!evt) return;
 
-    // Verifica se o usuário já tem alguma pendência ou participação
-    const statusParticipacao = evt.amIParticipating ? 
-        `<span style="color:green; font-weight:bold;">✔ Sua equipe está inscrita</span>` : 
-        `<button class="btn btn-secondary" onclick="trySubscribeTeam(${evt.id})">Inscrever Time</button>`;
-
     document.getElementById('event-info-container').innerHTML = `
         <h2 style="color: var(--ifsp-green-dark);">${evt.nome}</h2>
         <p style="margin-top: 5px;">${evt.descricao}</p>
         <div style="margin-top: 10px; font-size: 0.9rem; color: #555;">
             <span>📅 Início: ${evt.dataInicio}</span> | <span>🏆 ${evt.modalidade}</span>
         </div>
-        <div style="margin-top: 15px;">${statusParticipacao}</div>
+        <button class="btn btn-secondary" style="margin-top: 10px;">${evt.amIParticipating ? "Gerenciar Inscrição" : "Inscrever Time"}</button>
     `;
 
     const approvalArea = document.getElementById('admin-approval-area');
@@ -490,7 +456,7 @@ function confirmSubscription(teamName) {
 function renderPendingInscriptions() {
     const container = document.getElementById('pending-teams-list');
     container.innerHTML = "";
-    const pendings = db.pendingInscriptions.filter(p => p.eventId === currentEventId);
+    const pendings = db.pendingInscriptions.filter(p => p.eventId === 1);
     
     if(pendings.length === 0) {
         container.innerHTML = "<small style='color:#777'>Nenhuma solicitação pendente.</small>";

@@ -34,9 +34,7 @@ body { background-color: var(--bg-color); color: var(--text-color); display: fle
     flex-direction: column;
 }
 
-/* --- COMPONENTES VISUAIS --- */
-
-/* Header */
+/* --- HEADER --- */
 header {
     background-color: var(--ifsp-green);
     color: var(--white);
@@ -56,12 +54,12 @@ header {
 .back-btn { background: none; border: none; color: white; cursor: pointer; margin-right: 10px; display: flex; align-items: center; }
 .badge { position: absolute; top: -5px; right: -5px; background-color: var(--ifsp-red); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
 
-/* Telas (Views) */
+/* --- VIEWS --- */
 .view { display: none; flex-direction: column; flex: 1; padding: 16px; padding-bottom: 80px; animation: fadeIn 0.3s ease; }
 .view.active { display: flex; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Cards */
+/* --- CARDS & LISTAS --- */
 .card {
     background: var(--white);
     border-radius: 12px;
@@ -89,34 +87,54 @@ header {
     cursor: pointer;
 }
 
-/* Tags */
-.tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-top: 8px; }
-.tag.aberto { background-color: #e8f5e9; color: var(--ifsp-green); }
-.tag.andamento { background-color: #fff3e0; color: #e65100; }
-.tag.encerrado { background-color: #ffebee; color: var(--ifsp-red); }
-
-/* Perfil Stats */
-.profile-header { text-align: center; padding: 20px 0; background: linear-gradient(to bottom, #f9f9f9, #fff); border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee; }
-.avatar { width: 80px; height: 80px; background-color: var(--ifsp-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 10px auto; }
-.stats-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-.stat-item { text-align: center; }
-.stat-value { font-weight: bold; color: var(--ifsp-red); font-size: 1.2rem; }
-.stat-label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
-
-/* Mural / Social */
-.post-creator-area { background: #f0f2f5; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-.post-item { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid #eee; }
+/* --- POSTS / SOCIAL --- */
+.post-creator-area {
+    background: #f0f2f5;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.post-item {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+}
 .post-header { display: flex; align-items: center; margin-bottom: 10px; }
 .post-author { font-weight: bold; color: #333; font-size: 0.95rem; margin-right: 8px;}
 .post-time { font-size: 0.75rem; color: #888; }
 .post-content { margin-bottom: 12px; line-height: 1.4; font-size: 0.95rem; color: #444; }
 .post-actions { display: flex; gap: 15px; border-top: 1px solid #f0f0f0; padding-top: 8px; }
-.action-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; }
+.action-btn {
+    background: none; border: none; cursor: pointer; color: #666; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;
+}
 .action-btn:hover { color: var(--ifsp-green); }
 .action-btn span { font-size: 1.1rem; }
-.avatar-small { width: 32px; height: 32px; border-radius: 50%; background: #ccc; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; margin-right: 8px; }
 
-/* Ranking & Listas */
+.avatar-small {
+    width: 32px; height: 32px; border-radius: 50%; background: #ccc; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; margin-right: 8px;
+}
+
+/* --- OUTROS COMPONENTES --- */
+.tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-top: 8px; }
+.tag.aberto { background-color: #e8f5e9; color: var(--ifsp-green); }
+.tag.andamento { background-color: #fff3e0; color: #e65100; }
+.tag.encerrado { background-color: #ffebee; color: var(--ifsp-red); }
+
+.profile-header { text-align: center; padding: 20px 0; background: linear-gradient(to bottom, #f9f9f9, #fff); border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee; }
+.avatar { width: 80px; height: 80px; background-color: var(--ifsp-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 10px auto; }
+
+.stats-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+.stat-item { text-align: center; }
+.stat-value { font-weight: bold; color: var(--ifsp-red); font-size: 1.2rem; }
+.stat-label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+
+.interest-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.interest-chip { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+.interest-chip.selected { background-color: var(--ifsp-green); color: white; border-color: var(--ifsp-green); }
+
 .ranking-table { display: flex; flex-direction: column; gap: 10px; }
 .ranking-item { display: flex; align-items: center; background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .ranking-item.me { border: 2px solid var(--ifsp-green); background-color: #f0fff4; }
@@ -131,7 +149,6 @@ header {
 .approval-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #eee; }
 .approval-actions button { margin-left: 5px; }
 
-/* Botões e Inputs */
 .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: center; margin-top: 10px; }
 .btn-small { padding: 8px 16px; background-color: var(--ifsp-green); color: white; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
 .btn-danger-small { padding: 8px 12px; background-color: var(--ifsp-red); color: white; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
@@ -145,24 +162,17 @@ header {
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
 .form-group input:focus { border-color: var(--ifsp-green); }
 
-.interest-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.interest-chip { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
-.interest-chip.selected { background-color: var(--ifsp-green); color: white; border-color: var(--ifsp-green); }
-
 .match-score { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 10px; }
 .team-score { font-size: 1.5rem; font-weight: bold; width: 40px; text-align: center; border: 1px solid #ddd; border-radius: 4px;}
 
-/* Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: flex; justify-content: center; align-items: center; }
 .modal-content { background: white; padding: 20px; border-radius: 12px; width: 85%; max-width: 350px; }
 
-/* Navegação Inferior */
 nav.bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 414px; background: var(--white); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 100; }
 .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: #999; cursor: pointer; }
 .nav-item.active { color: var(--ifsp-red); font-weight: bold; }
 .nav-icon { font-size: 1.2rem; margin-bottom: 4px; }
 
-/* Utilitários */
 .hidden { display: none !important; }
 .text-center { text-align: center; }
 .text-small { font-size: 0.8rem; color: #777; }

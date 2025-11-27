@@ -25,16 +25,11 @@
             </div>
         </div>
         <div class="header-actions">
-            <!-- Ícone de Notificação -->
             <button onclick="toggleNotifications()" class="icon-btn" style="position: relative;">
                 <span class="material-symbols-outlined">notifications</span>
                 <span id="notif-badge" class="badge hidden">0</span>
             </button>
-            
-            <!-- Menu Usuario -->
             <span id="user-name-display" style="font-size: 0.8rem; font-weight: bold; vertical-align: middle; margin-left: 8px; margin-right: 8px;">Visitante</span>
-            
-            <!-- Botão Sair (Logout) -->
             <button onclick="doLogout()" title="Sair" class="icon-btn">
                 <span class="material-symbols-outlined">logout</span>
             </button>
@@ -45,9 +40,7 @@
     <div id="modal-notifications" class="modal-overlay hidden" onclick="if(event.target === this) toggleNotifications()">
         <div class="modal-content">
             <h3>Notificações</h3>
-            <div id="notifications-list">
-                <!-- Inserido via JS -->
-            </div>
+            <div id="notifications-list"></div>
             <button class="btn btn-secondary" onclick="toggleNotifications()">Fechar</button>
         </div>
     </div>
@@ -70,7 +63,6 @@
             <h1 style="font-size: 2.5rem; margin-bottom: 10px;">IFSP</h1>
             <p>Sistema de Competições</p>
         </div>
-        
         <div style="background: white; padding: 24px; border-radius: 16px; color: #333;">
             <div class="form-group">
                 <label>E-mail Institucional</label>
@@ -85,7 +77,6 @@
                 <a href="#" onclick="forgotPassword()" style="color: var(--ifsp-green); font-size: 0.9rem;">Esqueci minha senha</a>
             </div>
         </div>
-        
         <div class="text-center" style="margin-top: 30px; font-size: 0.8rem; opacity: 0.8;">
             Dica: Use "gestor@..." para ver funções administrativas.
         </div>
@@ -94,8 +85,6 @@
     <!-- TELA 2: FEED (HOME) -->
     <div id="screen-feed" class="view">
         <h2 style="margin-bottom: 16px;">Eventos Disponíveis</h2>
-        
-        <!-- Filtros -->
         <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px;">
             <span class="tag aberto" onclick="filterEvents('all')" style="cursor:pointer;">Todos</span>
             <span class="tag" onclick="filterEvents('Futsal')" style="background:#eee; color:#555; cursor:pointer;">Futsal</span>
@@ -103,28 +92,20 @@
             <span class="tag" onclick="filterEvents('Xadrez')" style="background:#eee; color:#555; cursor:pointer;">Xadrez</span>
             <span class="tag" onclick="filterEvents('Handebol')" style="background:#eee; color:#555; cursor:pointer;">Handebol</span>
         </div>
-
-        <div id="events-list">
-            <!-- Inserido via JS -->
-        </div>
-
-        <!-- Botão Flutuante (Gestor) -->
+        <div id="events-list"></div>
         <div id="fab-create" class="btn-float" onclick="navigateTo('screen-create-event')">
             <span class="material-symbols-outlined">add</span>
         </div>
     </div>
 
-    <!-- TELA: COMUNIDADES -->
+    <!-- TELA: LISTA DE COMUNIDADES -->
     <div id="screen-communities" class="view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <h2>Comunidades</h2>
             <button class="btn-small" onclick="navigateTo('screen-create-community')">+ Criar</button>
         </div>
         <p class="text-small" style="margin-bottom: 15px;">Participe dos grupos e interaja no mural.</p>
-
-        <div id="communities-list">
-            <!-- Inserido via JS -->
-        </div>
+        <div id="communities-list"></div>
     </div>
 
     <!-- TELA: DETALHES DA COMUNIDADE (MURAL SOCIAL) -->
@@ -165,26 +146,16 @@
         </form>
     </div>
 
-    <!-- TELA: MEUS EVENTOS E TIMES -->
+    <!-- TELA: MEUS TIMES -->
     <div id="screen-my-events" class="view">
-        
-        <!-- Seção Times -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h2>Meus Times</h2>
             <button class="btn-small" onclick="navigateTo('screen-create-team')">+ Criar Time</button>
         </div>
-        <div id="my-teams-slider" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px;">
-            <!-- Times inseridos via JS -->
-        </div>
-
+        <div id="my-teams-slider" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px;"></div>
         <div class="divider"></div>
-
-        <!-- Seção Eventos -->
         <h2 style="margin-bottom: 16px; margin-top: 10px;">Minhas Inscrições</h2>
-        <div id="my-events-list">
-            <!-- Eventos inseridos via JS -->
-        </div>
-        
+        <div id="my-events-list"></div>
         <div id="empty-my-events" class="text-center hidden" style="margin-top: 40px; color: #999;">
             <span style="font-size: 2rem;">☹</span>
             <p>Você ainda não participa de nenhum evento.</p>
@@ -192,26 +163,19 @@
         </div>
     </div>
 
-    <!-- TELA: RANKING GERAL -->
+    <!-- TELA: RANKING -->
     <div id="screen-ranking" class="view">
         <h2 style="margin-bottom: 16px;">Ranking Geral 🏆</h2>
-        <p class="text-small" style="margin-bottom: 15px;">Os alunos mais engajados do campus.</p>
-        
-        <div class="ranking-table" id="ranking-list">
-            <!-- Lista de ranking via JS -->
-        </div>
+        <div class="ranking-table" id="ranking-list"></div>
     </div>
 
     <!-- TELA: PERFIL -->
     <div id="screen-profile" class="view">
         <h2 style="margin-bottom: 16px;">Meu Perfil</h2>
-        
         <div class="profile-header">
             <div class="avatar" id="profile-avatar">A</div>
             <h3 id="profile-name">Nome do Usuário</h3>
             <span id="profile-email" style="color: #777; font-size: 0.9rem;">email@ifsp.edu.br</span>
-            
-            <!-- Stats de Gamificação -->
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-value" id="profile-points">0</div>
@@ -227,12 +191,8 @@
                 </div>
             </div>
         </div>
-
         <h4 style="margin-bottom: 10px;">Meus Interesses</h4>
-        <div class="interest-chips" id="interests-list">
-            <!-- Chips gerados via JS -->
-        </div>
-
+        <div class="interest-chips" id="interests-list"></div>
         <div style="margin-top: 30px;">
             <div class="divider"></div>
             <div class="text-center" style="margin-top: 20px;">
@@ -305,21 +265,17 @@
         </form>
     </div>
 
-    <!-- TELA 4: DETALHES DO EVENTO -->
+    <!-- TELA 4: DETALHES DO EVENTO (SEM MURAL) -->
     <div id="screen-event-details" class="view">
-        <div id="event-info-container" style="margin-bottom: 10px;">
-            <!-- Inserido via JS -->
-        </div>
+        <div id="event-info-container" style="margin-bottom: 10px;"></div>
         
-        <!-- ÁREA DO GESTOR: APROVAÇÃO -->
+        <!-- ÁREA DO GESTOR -->
         <div id="admin-approval-area" class="hidden" style="background-color: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffe0b2;">
             <h4 style="color: #e65100; margin-bottom: 8px; display: flex; align-items: center;">
                 <span class="material-symbols-outlined" style="font-size: 1.2rem; margin-right: 5px;">verified_user</span>
                 Aprovações Pendentes
             </h4>
-            <div id="pending-teams-list">
-                <!-- Lista de times pendentes via JS -->
-            </div>
+            <div id="pending-teams-list"></div>
         </div>
 
         <div style="background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-around; text-align: center;">
@@ -356,12 +312,8 @@
             <button class="btn btn-primary" onclick="saveMatchResult()">Salvar Resultado</button>
             <button class="btn btn-secondary" style="margin-top: 10px;" onclick="approveResult()">Aprovar (Gestor)</button>
         </div>
-
-        <!-- VOTAÇÃO CRAQUE DA GALERA -->
         <h3 style="margin-bottom: 10px;">Votação: Craque da Galera ⚽</h3>
-        <div id="voting-list">
-            <!-- Lista de jogadores para votar -->
-        </div>
+        <div id="voting-list"></div>
     </div>
 
     <!-- NAVEGAÇÃO INFERIOR -->
@@ -386,7 +338,6 @@
 
 </div>
 
-<!-- Link para o arquivo JS externo -->
 <script src="script.js"></script>
 
 </body>
