@@ -1,34 +1,101 @@
-// --- BANCO DE DADOS MOCKADO ---
+// --- BANCO DE DADOS MOCKADO (AGORA MAIS COMPLETO) ---
 const db = {
     currentUser: null,
-    // Modalidades agora são dinâmicas (podem ser criadas pelo Admin)
-    modalities: ["Futsal", "Volei", "Xadrez", "Handebol"],
+    
+    // Lista expandida de Modalidades
+    modalities: ["Futsal", "Volei", "Xadrez", "Handebol", "Basquete", "Tenis de Mesa", "E-Sports"],
+    
+    // Usuários do sistema (Login para testes)
     users: [
-        { id: 1, name: "Carlos Gestor", email: "gestor@ifsp.edu.br", password: "123", role: "GESTOR", points: 1100, interests: ["Futsal"] },
-        { id: 2, name: "Ana Aluna", email: "aluno@aluno.ifsp.edu.br", password: "123", role: "USER", points: 1500, interests: ["Volei"] },
-        { id: 3, name: "Admin Sistema", email: "admin@ifsp.edu.br", password: "123", role: "ADMIN", points: 0, interests: [] }
+        { id: 1, name: "Carlos Gestor", email: "gestor@ifsp.edu.br", password: "123", role: "GESTOR", points: 1250, interests: ["Futsal", "Tenis de Mesa"] },
+        { id: 2, name: "Ana Aluna", email: "aluno@aluno.ifsp.edu.br", password: "123", role: "USER", points: 1800, interests: ["Volei", "Handebol"] },
+        { id: 3, name: "Admin Sistema", email: "admin@ifsp.edu.br", password: "123", role: "ADMIN", points: 0, interests: [] },
+        { id: 4, name: "Lucas Silva", email: "lucas@aluno.ifsp.edu.br", password: "123", role: "USER", points: 950, interests: ["Futsal"] },
+        { id: 5, name: "Mariana Costa", email: "mariana@aluno.ifsp.edu.br", password: "123", role: "USER", points: 1100, interests: ["Xadrez"] },
+        { id: 6, name: "Pedro Santos", email: "pedro@aluno.ifsp.edu.br", password: "123", role: "USER", points: 2100, interests: ["E-Sports", "Basquete"] },
+        { id: 7, name: "Juliana Lima", email: "juliana@aluno.ifsp.edu.br", password: "123", role: "USER", points: 1400, interests: ["Volei"] }
     ],
+
+    // Eventos com diferentes status e modalidades
     events: [
-        { id: 1, nome: "Copa IFSP Futsal", descricao: "Torneio tradicional.", dataInicio: "10/12/2024", status: "INSCRICOES_ABERTAS", modalidades: ["Futsal"], amIParticipating: false }
+        { id: 1, nome: "Copa IFSP Futsal", descricao: "O torneio mais aguardado do ano! Times mistos permitidos.", dataInicio: "10/12/2024", status: "INSCRICOES_ABERTAS", modalidades: ["Futsal"], amIParticipating: false },
+        { id: 2, nome: "Interclasse de Vôlei", descricao: "Disputa acirrada entre os cursos técnicos e superiores.", dataInicio: "12/12/2024", status: "EM_ANDAMENTO", modalidades: ["Volei"], amIParticipating: true },
+        { id: 3, nome: "Torneio de Xadrez Relâmpago", descricao: "Partidas de 10 minutos. Valendo vaga para o JIF.", dataInicio: "15/12/2024", status: "AGUARDANDO_INICIO", modalidades: ["Xadrez"], amIParticipating: false },
+        { id: 4, nome: "Jogos de Verão", descricao: "Multiesportes para encerrar o semestre letivo.", dataInicio: "20/12/2024", status: "INSCRICOES_ABERTAS", modalidades: ["Handebol", "Basquete", "Tenis de Mesa"], amIParticipating: false },
+        { id: 5, nome: "Campeonato de LOL e Valorant", descricao: "Traga seu time para o laboratório 3.", dataInicio: "18/12/2024", status: "ENCERRADO", modalidades: ["E-Sports"], amIParticipating: false }
     ],
+
+    // Jogos vinculados aos eventos
     matches: [
-        { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 2, placarB: 1, status: "ANDAMENTO" }
+        // Copa Futsal
+        { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 0, placarB: 0, status: "AGENDADA" },
+        // Interclasse Volei (Em andamento)
+        { id: 201, eventoId: 2, timeA: "Vôlei Stars", timeB: "Manchete FC", placarA: 2, placarB: 1, status: "FINALIZADA" },
+        { id: 202, eventoId: 2, timeA: "Licenciatura Mat", timeB: "Engenharia A", placarA: 1, placarB: 1, status: "ANDAMENTO" },
+        // Jogos de Verão
+        { id: 401, eventoId: 4, timeA: "Handebol A", timeB: "Handebol B", placarA: 12, placarB: 10, status: "FINALIZADA" }
     ],
+
+    // Times do sistema
     teams: [
-        { id: 1, ownerId: 2, nome: "3º Informática", modalidade: "Futsal" }
+        { id: 1, ownerId: 2, nome: "3º Informática", modalidade: "Futsal" }, // Time da Ana
+        { id: 2, ownerId: 1, nome: "Vôlei Stars", modalidade: "Volei" }, // Time do Carlos
+        { id: 3, ownerId: 2, nome: "Ana's Chess Club", modalidade: "Xadrez" }, // Outro time da Ana
+        { id: 4, ownerId: 4, nome: "2º Mecatrônica", modalidade: "Futsal" },
+        { id: 5, ownerId: 6, nome: "Cyber Atletas", modalidade: "E-Sports" }
     ],
+
+    // Comunidades de interesse
     communities: [
-        { id: 1, name: "Atlética da Computação", members: 120, description: "Comunidade oficial de TI." }
+        { id: 1, name: "Atlética da Computação", members: 120, description: "Comunidade oficial dos cursos de TI. Notícias, festas e treinos." },
+        { id: 2, name: "Clube de Xadrez", members: 45, description: "Encontros semanais toda quarta-feira no pátio." },
+        { id: 3, name: "Vôlei dos Servidores", members: 15, description: "Racha de vôlei exclusivo para servidores e convidados." },
+        { id: 4, name: "Grupo de Robótica", members: 32, description: "Discussões sobre projetos e competições de robótica." },
+        { id: 5, name: "Carona Solidária", members: 210, description: "Organização de caronas para o campus." }
     ],
+
+    // Postagens nas comunidades
     posts: [
-        { id: 1, communityId: 1, author: "João Silva", text: "Alguém animado para o Interclasse?", time: "10min atrás", likes: 5, dislikes: 0 }
+        { id: 1, communityId: 1, author: "João Silva", text: "Alguém animado para o Interclasse de Futsal? Vamos ganhar esse ano!", time: "10min atrás", likes: 5, dislikes: 0 },
+        { id: 2, communityId: 1, author: "Maria Souza", text: "Precisamos de mais treinos antes da copa! Quem topa sábado?", time: "1h atrás", likes: 12, dislikes: 1 },
+        { id: 3, communityId: 2, author: "Pedro H.", text: "Aprenderam a Defesa Siciliana? Achei muito forte.", time: "2 dias atrás", likes: 3, dislikes: 0 },
+        { id: 4, communityId: 2, author: "Ana Aluna", text: "O torneio relâmpago vai ser incrível!", time: "3 dias atrás", likes: 8, dislikes: 0 },
+        { id: 5, communityId: 5, author: "Lucas Silva", text: "Alguém vai para o centro de Guarulhos hoje às 18h?", time: "5h atrás", likes: 1, dislikes: 0 }
     ],
-    pendingInscriptions: [],
-    notifications: [],
-    ranking: [ { name: "Ana Aluna", points: 1500 }, { name: "Carlos Gestor", points: 1100 } ],
-    players: [ { id: 1, name: "Lucas Silva", team: "3º Info", votes: 12 } ]
+
+    // Inscrições pendentes para aprovação do gestor
+    pendingInscriptions: [
+        { id: 501, teamName: "Técnico em Edificações", eventId: 1 },
+        { id: 502, teamName: "Licenciatura Física", eventId: 1 },
+        { id: 503, teamName: "1º Ano Automação", eventId: 4 }
+    ],
+
+    // Notificações do usuário
+    notifications: [
+        { id: 1, text: "Você foi convidado para o time 'Feras do Basquete'", read: false },
+        { id: 2, text: "Resultado do jogo Vôlei Stars x Manchete FC foi aprovado", read: true },
+        { id: 3, text: "Novo evento adicionado: Campeonato de LOL", read: true }
+    ],
+
+    // Jogadores para votação (Craque da Galera)
+    players: [ 
+        { id: 1, name: "Lucas Silva", team: "3º Info", votes: 12 },
+        { id: 2, name: "Rafael Costa", team: "2º Mec", votes: 15 },
+        { id: 3, name: "Gustavo Oliveira", team: "3º Info", votes: 8 },
+        { id: 4, name: "Felipe Santos", team: "2º Mec", votes: 20 }
+    ],
+
+    // Ranking Geral Calculado (Baseado nos pontos dos users)
+    get ranking() {
+        return this.users.sort((a, b) => b.points - a.points).map(u => ({
+            name: u.name,
+            points: u.points,
+            role: u.role // Para identificar no ranking
+        }));
+    }
 };
 
+// Variáveis de Estado
 let currentEventId = null;
 let currentCommunityId = null;
 const historyStack = [];
@@ -52,7 +119,6 @@ function navigateTo(screenId, addToStack = true) {
     const btnBack = document.getElementById('btn-back');
     const fab = document.getElementById('fab-create');
 
-    // Lógica de exibição do Header/Nav
     if (screenId === 'screen-login' || screenId === 'screen-register') {
         header.classList.add('hidden');
         nav.classList.add('hidden');
@@ -70,7 +136,6 @@ function navigateTo(screenId, addToStack = true) {
         if(screenId === 'screen-profile') document.getElementById('nav-profile').classList.add('active');
         if(screenId === 'screen-admin-panel') document.getElementById('nav-admin')?.classList.add('active');
 
-        // FAB apenas para Gestor/Admin na Home
         if (screenId === 'screen-feed' && (db.currentUser.role === 'GESTOR' || db.currentUser.role === 'ADMIN')) {
             fab.classList.remove('hidden');
         } else {
@@ -78,7 +143,6 @@ function navigateTo(screenId, addToStack = true) {
         }
     }
 
-    // Triggers
     if (screenId === 'screen-feed') renderEvents();
     if (screenId === 'screen-my-events') renderMyTeamsAndEvents();
     if (screenId === 'screen-communities') renderCommunities();
@@ -117,15 +181,12 @@ function doLogin() {
         if (user.password !== pass) return alert("Senha incorreta.");
         db.currentUser = user;
     } else {
-        // Lógica de Fallback para testes rápidos (cria usuário se não existir)
         let role = "USER";
         if (email.includes("aluno")) {
-            role = "USER"; // Regra: Aluno é sempre USER
+            role = "USER"; 
         } else if (email.endsWith("@ifsp.edu.br")) {
-            role = "GESTOR"; // Regra: Servidor pode ser Gestor
+            role = "GESTOR"; 
         }
-        
-        // Override para admin
         if (email.includes("admin")) role = "ADMIN";
 
         db.currentUser = { id: Date.now(), name: email.split('@')[0], email: email, role: role, points: 0, interests: [] };
@@ -145,13 +206,8 @@ function handleRegister(e) {
 
     if (db.users.find(u => u.email === email)) return alert("Email já cadastrado.");
 
-    // Regra de Negócio (Refatorada):
-    let role = "USER";
-    if (!email.includes("aluno") && email.endsWith("@ifsp.edu.br")) {
-        // Se for servidor, começa como USER mas pode ser promovido pelo Admin
-        // Para facilitar o teste, vamos deixar como USER e o Admin promove.
-        role = "USER"; 
-    }
+    // Lógica: Aluno sempre USER, Servidor USER (pode virar gestor pelo admin)
+    let role = "USER"; 
 
     const newUser = { id: Date.now(), name: name, email: email, password: pass, role: role, points: 0, interests: [] };
     db.users.push(newUser);
@@ -170,7 +226,7 @@ function updateNavBasedOnRole() {
     else adminNav.classList.add('hidden');
 }
 
-// --- ADMIN PANEL (HU 14 & GESTÃO MODALIDADES) ---
+// --- ADMIN PANEL ---
 function renderAdminPanel() {
     renderAdminUsers();
     renderAdminModalities();
@@ -183,7 +239,6 @@ function renderAdminUsers() {
         const div = document.createElement('div');
         div.className = "user-list-item";
         
-        // Botão de Promoção: Só aparece para servidores (@ifsp.edu.br) que não são alunos
         let actionBtn = "";
         const isServidor = !u.email.includes("aluno") && u.email.endsWith("@ifsp.edu.br");
         
@@ -216,7 +271,6 @@ function toggleRole(userId) {
     }
 }
 
-// Gestão de Modalidades
 function renderAdminModalities() {
     const container = document.getElementById('admin-modalities-list');
     container.innerHTML = "";
@@ -232,22 +286,20 @@ function createNewModality() {
         db.modalities.push(val);
         input.value = "";
         alert(`Modalidade "${val}" criada!`);
-        populateModalitySelects(); // Atualiza dropdowns globalmente
-        renderAdminModalities(); // Atualiza lista visual
+        populateModalitySelects(); 
+        renderAdminModalities(); 
     } else if (db.modalities.includes(val)) {
         alert("Modalidade já existe.");
     }
 }
 
 function populateModalitySelects() {
-    // Atualiza filtros do feed
     const feedFilters = document.getElementById('feed-filters');
     feedFilters.innerHTML = `<span class="tag aberto" onclick="filterEvents('all')" style="cursor:pointer;">Todos</span>`;
     db.modalities.forEach(mod => {
         feedFilters.innerHTML += `<span class="tag" onclick="filterEvents('${mod}')" style="background:#eee; color:#555; cursor:pointer;">${mod}</span>`;
     });
 
-    // Atualiza Create Team
     const teamSelect = document.getElementById('team-modality');
     teamSelect.innerHTML = "";
     db.modalities.forEach(mod => {
@@ -257,7 +309,6 @@ function populateModalitySelects() {
         teamSelect.appendChild(opt);
     });
 
-    // Atualiza Create Event (Checkboxes)
     const evtCheckContainer = document.getElementById('evt-modalidades-container');
     evtCheckContainer.innerHTML = "";
     db.modalities.forEach(mod => {
@@ -271,10 +322,16 @@ function populateModalitySelects() {
 function renderEvents(filter = 'all') {
     const container = document.getElementById('events-list');
     container.innerHTML = "";
+    
+    if (db.events.length === 0) {
+        container.innerHTML = "<p class='text-center text-small'>Nenhum evento disponível.</p>";
+        return;
+    }
+
     db.events.forEach(evt => {
         if (filter !== 'all' && !evt.modalidades.includes(filter)) return;
 
-        const statusClass = evt.status === 'INSCRICOES_ABERTAS' ? 'aberto' : 'andamento';
+        const statusClass = evt.status === 'INSCRICOES_ABERTAS' ? 'aberto' : (evt.status === 'EM_ANDAMENTO' ? 'andamento' : 'encerrado');
         
         let adminActions = "";
         if (db.currentUser.role === 'GESTOR' || db.currentUser.role === 'ADMIN') {
@@ -314,11 +371,9 @@ function prepareEditEvent(id) {
     document.getElementById('evt-id').value = evt.id;
     document.getElementById('evt-nome').value = evt.nome;
     document.getElementById('evt-desc').value = evt.descricao;
-    // Formatar data
     const parts = evt.dataInicio.split('/');
     document.getElementById('evt-inicio').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
     
-    // Check checkboxes
     document.querySelectorAll('input[name="modalidades"]').forEach(cb => {
         cb.checked = evt.modalidades.includes(cb.value);
     });
@@ -402,7 +457,7 @@ function showEventDetails(eventId) {
 function confirmGenerateBrackets() {
     db.matches = db.matches.filter(m => m.eventoId !== currentEventId);
     db.matches.push(
-        { id: Date.now(), eventoId: currentEventId, timeA: "Time A", timeB: "Time B", placarA: 0, placarB: 0, status: "AGENDADA" }
+        { id: Date.now(), eventoId: currentEventId, timeA: "Time A (Chave)", timeB: "Time B (Chave)", placarA: 0, placarB: 0, status: "AGENDADA" }
     );
     document.getElementById('modal-generate-brackets').classList.add('hidden');
     alert("Chaves geradas!");
@@ -440,7 +495,6 @@ function renderCommunities() {
     list.innerHTML = "";
     db.communities.forEach(c => {
         let deleteBtn = "";
-        // ADMIN pode apagar comunidades
         if (db.currentUser.role === 'ADMIN') {
             deleteBtn = `<button class="delete-comm-btn" onclick="event.stopPropagation(); deleteCommunity(${c.id})"><span class="material-symbols-outlined">delete</span></button>`;
         }
@@ -489,7 +543,6 @@ function renderCommunityFeed(commId) {
     const posts = db.posts.filter(p => p.communityId === commId);
 
     posts.forEach(p => {
-        // Admin pode apagar posts
         let deletePostBtn = "";
         if (db.currentUser.role === 'ADMIN') {
             deletePostBtn = `<button class="post-delete-btn" onclick="deletePost(${p.id})"><span class="material-symbols-outlined" style="font-size:1.2rem">delete</span></button>`;
@@ -624,7 +677,8 @@ function showMatchDetails(match) {
 function renderVoting() {
     const list = document.getElementById('voting-list');
     list.innerHTML = "";
-    db.players.forEach(p => {
+    const sorted = [...db.players].sort((a,b)=> b.votes - a.votes);
+    sorted.forEach(p => {
         list.innerHTML += `<div class="vote-card"><div><strong>${p.name}</strong> <small>${p.team}</small></div><button class="btn-small" onclick="p = db.players.find(x=>x.id==${p.id}); p.votes++; renderVoting();">Votar (${p.votes})</button></div>`;
     });
 }
