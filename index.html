@@ -133,7 +133,7 @@
                 </div>
                 <div class="form-group">
                     <label>E-mail Institucional</label>
-                    <input type="email" id="reg-email" required placeholder="@ifsp.edu.br">
+                    <input type="email" id="reg-email" required placeholder="@aluno.ifsp.edu.br">
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
@@ -149,13 +149,9 @@
     <div id="screen-feed" class="view">
         <h2 style="margin-bottom: 16px;">Eventos</h2>
         
-        <!-- Filtros de Modalidade -->
-        <div class="filters-scroll">
-            <span class="tag aberto" onclick="filterEvents('all')" style="cursor:pointer;">Todos</span>
-            <span class="tag" onclick="filterEvents('Futsal')" style="background:#eee; color:#555; cursor:pointer;">Futsal</span>
-            <span class="tag" onclick="filterEvents('Volei')" style="background:#eee; color:#555; cursor:pointer;">Vôlei</span>
-            <span class="tag" onclick="filterEvents('Xadrez')" style="background:#eee; color:#555; cursor:pointer;">Xadrez</span>
-            <span class="tag" onclick="filterEvents('Handebol')" style="background:#eee; color:#555; cursor:pointer;">Handebol</span>
+        <!-- Filtros de Modalidade (Injetados pelo JS) -->
+        <div id="feed-filters" class="filters-scroll">
+            <!-- Tags serão inseridas via JS -->
         </div>
 
         <div id="events-list" style="margin-top: 10px;">
@@ -168,12 +164,28 @@
         </div>
     </div>
 
-    <!-- TELA: ADMIN USUÁRIOS (HU 14) -->
-    <div id="screen-admin-users" class="view">
-        <h2 style="margin-bottom: 16px;">Gestão de Usuários</h2>
-        <p class="text-small" style="margin-bottom: 10px;">Controle de acesso e permissões.</p>
-        <div id="admin-users-list">
-            <!-- Lista de Usuários via JS -->
+    <!-- TELA: ADMIN PANEL (HU 14) -->
+    <div id="screen-admin-panel" class="view">
+        <h2 style="margin-bottom: 16px;">Painel Administrativo</h2>
+        
+        <div class="card" style="border-left-color: #007bff;">
+            <h3>Gestão de Usuários</h3>
+            <p class="text-small">Permitir ou revogar acesso de gestores.</p>
+            <div id="admin-users-list" style="margin-top:10px; max-height: 200px; overflow-y: auto;">
+                <!-- Lista inserida via JS -->
+            </div>
+        </div>
+
+        <div class="card" style="border-left-color: #e65100;">
+            <h3>Modalidades do Sistema</h3>
+            <p class="text-small">Adicione novos esportes ao sistema.</p>
+            <div class="form-group" style="display: flex; gap: 10px; margin-top: 10px;">
+                <input type="text" id="new-modality-input" placeholder="Nova modalidade..." style="flex:1;">
+                <button class="btn-small" onclick="createNewModality()">Adicionar</button>
+            </div>
+            <div id="admin-modalities-list" class="interest-chips" style="margin-top: 10px;">
+                <!-- Chips inseridos via JS -->
+            </div>
         </div>
     </div>
 
@@ -261,21 +273,7 @@
             <div class="avatar" id="profile-avatar">A</div>
             <h3 id="profile-name">Usuário</h3>
             <span id="profile-email" style="color: #777; font-size: 0.9rem;">email@ifsp.edu.br</span>
-            
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value" id="profile-points">0</div>
-                    <div class="stat-label">Pontos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="profile-level">BRONZE</div>
-                    <div class="stat-label">Nível</div>
-                </div>
-                <div class="stat-item" onclick="navigateTo('screen-ranking')" style="cursor: pointer;">
-                    <div class="stat-value" id="profile-rank">-</div>
-                    <div class="stat-label" style="text-decoration: underline; color: var(--ifsp-green);">Rank</div>
-                </div>
-            </div>
+            <span id="profile-role-badge" class="role-badge">USER</span>
         </div>
 
         <h4 style="margin-bottom: 10px;">Esportes de Interesse (HU 07)</h4>
@@ -284,7 +282,7 @@
         <div style="margin-top: 30px;">
             <div class="divider"></div>
             <div class="text-center" style="margin-top: 20px;">
-                <button class="btn-danger-small" style="width: 100%; background-color: transparent; color: var(--ifsp-red); border: 1px solid var(--ifsp-red);" onclick="doLogout()">
+                <button class="btn-danger-small" style="width: 100%; background: transparent; color: var(--ifsp-red); border: 1px solid var(--ifsp-red);" onclick="doLogout()">
                     Sair da Conta
                 </button>
             </div>
@@ -317,12 +315,8 @@
             
             <div class="form-group">
                 <label>Modalidades (Múltipla Escolha - HU 04)</label>
-                <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
-                    <label class="check-label"><input type="checkbox" name="modalidades" value="Futsal"> Futsal</label>
-                    <label class="check-label"><input type="checkbox" name="modalidades" value="Volei"> Vôlei</label>
-                    <label class="check-label"><input type="checkbox" name="modalidades" value="Xadrez"> Xadrez</label>
-                    <label class="check-label"><input type="checkbox" name="modalidades" value="Handebol"> Handebol</label>
-                    <label class="check-label"><input type="checkbox" name="modalidades" value="Basquete"> Basquete</label>
+                <div class="checkbox-group" id="evt-modalidades-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
+                    <!-- Inserido via JS -->
                 </div>
             </div>
 
@@ -350,11 +344,7 @@
             <div class="form-group">
                 <label>Modalidade Principal</label>
                 <select id="team-modality">
-                    <option value="Futsal">Futsal</option>
-                    <option value="Volei">Vôlei</option>
-                    <option value="Xadrez">Xadrez</option>
-                    <option value="Handebol">Handebol</option>
-                    <option value="Basquete">Basquete</option>
+                    <!-- Inserido via JS -->
                 </select>
             </div>
             <p class="text-small" style="color:#666; margin-bottom: 15px;">Você será cadastrado automaticamente como capitão.</p>
@@ -442,7 +432,7 @@
             <span>Perfil</span>
         </div>
         <!-- HU 14: Item Admin -->
-        <div class="nav-item hidden" id="nav-admin" onclick="navigateTo('screen-admin-users')">
+        <div class="nav-item hidden" id="nav-admin" onclick="navigateTo('screen-admin-panel')">
             <span class="nav-icon"><span class="material-symbols-outlined">admin_panel_settings</span></span>
             <span>Admin</span>
         </div>
