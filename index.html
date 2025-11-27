@@ -52,6 +52,18 @@
         </div>
     </div>
 
+    <!-- MODAL SELEÇÃO DE TIME (INSCRICAO) -->
+    <div id="modal-team-select" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Escolha um Time</h3>
+            <p class="text-small" style="margin-bottom: 10px;">Qual time você deseja inscrever?</p>
+            <div id="team-select-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <!-- Opções via JS -->
+            </div>
+            <button class="btn btn-secondary" onclick="closeTeamSelect()">Cancelar</button>
+        </div>
+    </div>
+
     <!-- TELA 1: LOGIN -->
     <div id="screen-login" class="view active" style="justify-content: center; background: linear-gradient(135deg, var(--ifsp-green) 0%, var(--ifsp-green-dark) 100%); color: white;">
         <div class="text-center" style="margin-bottom: 40px;">
@@ -70,7 +82,7 @@
             </div>
             <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
             <div class="text-center" style="margin-top: 15px;">
-                <a href="#" style="color: var(--ifsp-green); font-size: 0.9rem;">Esqueci minha senha</a>
+                <a href="#" onclick="forgotPassword()" style="color: var(--ifsp-green); font-size: 0.9rem;">Esqueci minha senha</a>
             </div>
         </div>
         
@@ -88,6 +100,8 @@
             <span class="tag aberto" onclick="filterEvents('all')" style="cursor:pointer;">Todos</span>
             <span class="tag" onclick="filterEvents('Futsal')" style="background:#eee; color:#555; cursor:pointer;">Futsal</span>
             <span class="tag" onclick="filterEvents('Volei')" style="background:#eee; color:#555; cursor:pointer;">Vôlei</span>
+            <span class="tag" onclick="filterEvents('Xadrez')" style="background:#eee; color:#555; cursor:pointer;">Xadrez</span>
+            <span class="tag" onclick="filterEvents('Handebol')" style="background:#eee; color:#555; cursor:pointer;">Handebol</span>
         </div>
 
         <div id="events-list">
@@ -100,20 +114,42 @@
         </div>
     </div>
 
-    <!-- TELA: COMUNIDADES (NOVA) -->
+    <!-- TELA: COMUNIDADES -->
     <div id="screen-communities" class="view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <h2>Comunidades</h2>
             <button class="btn-small" onclick="navigateTo('screen-create-community')">+ Criar</button>
         </div>
-        <p class="text-small" style="margin-bottom: 15px;">Grupos de interesse e atléticas do campus.</p>
+        <p class="text-small" style="margin-bottom: 15px;">Participe dos grupos e interaja no mural.</p>
 
         <div id="communities-list">
             <!-- Inserido via JS -->
         </div>
     </div>
 
-    <!-- TELA: CRIAR COMUNIDADE (NOVA) -->
+    <!-- TELA: DETALHES DA COMUNIDADE (MURAL SOCIAL) -->
+    <div id="screen-community-details" class="view">
+        <div id="comm-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+            <!-- Inserido via JS -->
+        </div>
+
+        <div class="post-creator-area">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+                <div class="avatar-small" id="user-avatar-post">U</div>
+                <input type="text" id="post-input" placeholder="No que você está pensando?" style="flex:1; border:none; background:transparent; outline:none;">
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+                <button class="btn-small" onclick="handlePost()">Publicar</button>
+            </div>
+        </div>
+
+        <h4 style="margin-bottom: 10px; color:#555;">Mural de Discussão</h4>
+        <div id="community-feed-list">
+            <!-- Posts inseridos via JS -->
+        </div>
+    </div>
+
+    <!-- TELA: CRIAR COMUNIDADE -->
     <div id="screen-create-community" class="view">
         <h2 style="margin-bottom: 20px;">Nova Comunidade</h2>
         <form onsubmit="handleCreateCommunity(event)">
@@ -261,6 +297,7 @@
                     <option value="Futsal">Futsal</option>
                     <option value="Volei">Vôlei</option>
                     <option value="Xadrez">Xadrez</option>
+                    <option value="Handebol">Handebol</option>
                 </select>
             </div>
             <p class="text-small">Você será o capitão deste time.</p>
@@ -268,13 +305,13 @@
         </form>
     </div>
 
-    <!-- TELA 4: DETALHES DO EVENTO (COM ABAS E GESTÃO) -->
+    <!-- TELA 4: DETALHES DO EVENTO -->
     <div id="screen-event-details" class="view">
         <div id="event-info-container" style="margin-bottom: 10px;">
             <!-- Inserido via JS -->
         </div>
         
-        <!-- ÁREA DO GESTOR: APROVAÇÃO (NOVO) -->
+        <!-- ÁREA DO GESTOR: APROVAÇÃO -->
         <div id="admin-approval-area" class="hidden" style="background-color: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffe0b2;">
             <h4 style="color: #e65100; margin-bottom: 8px; display: flex; align-items: center;">
                 <span class="material-symbols-outlined" style="font-size: 1.2rem; margin-right: 5px;">verified_user</span>
@@ -285,30 +322,10 @@
             </div>
         </div>
 
-        <!-- ABAS DE NAVEGAÇÃO -->
-        <div class="tabs">
-            <div class="tab active" onclick="switchEventTab('matches')">Jogos & Tabela</div>
-            <div class="tab" onclick="switchEventTab('wall')">Mural & Social</div>
+        <div style="background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-around; text-align: center;">
+            <small style="color: #555;">Jogos da Competição</small>
         </div>
-
-        <!-- CONTEÚDO ABA: JOGOS -->
-        <div id="tab-matches" class="tab-content active">
-            <div style="background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-around; text-align: center;">
-                <small style="color: #555;">Clique em um jogo para ver a súmula e votar no craque da partida.</small>
-            </div>
-            <div id="matches-list"></div>
-        </div>
-
-        <!-- CONTEÚDO ABA: MURAL (POSTS) -->
-        <div id="tab-wall" class="tab-content">
-            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="post-input" placeholder="Deixe seu comentário..." style="flex:1;">
-                <button class="btn-small" style="margin-top: 0;" onclick="handlePost()">Enviar</button>
-            </div>
-            <div id="posts-list">
-                <!-- Posts inseridos via JS -->
-            </div>
-        </div>
+        <div id="matches-list"></div>
     </div>
 
     <!-- TELA 5: SÚMULA / VOTAÇÃO -->

@@ -17,7 +17,7 @@ const db = {
             dataInicio: "10/12/2024",
             status: "INSCRICOES_ABERTAS",
             modalidade: "Futsal",
-            amIParticipating: true 
+            amIParticipating: true // Simulação inicial
         },
         {
             id: 2,
@@ -42,6 +42,7 @@ const db = {
         { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 2, placarB: 1, status: "ANDAMENTO" },
         { id: 102, eventoId: 1, timeA: "1º Lic. Mat", timeB: "Eng. Automação", placarA: 0, placarB: 0, status: "AGENDADA" }
     ],
+    // Times que o usuário É dono/membro
     teams: [
         { id: 1, nome: "3º Informática", modalidade: "Futsal" },
         { id: 2, nome: "Vôlei Stars", modalidade: "Volei" }
@@ -51,7 +52,11 @@ const db = {
         { id: 2, name: "Clube de Xadrez", members: 45, description: "Encontros semanais e torneios." },
         { id: 3, name: "Vôlei dos Servidores", members: 15, description: "Racha de vôlei toda quinta." }
     ],
-    // Novas Inscrições Pendentes (Para o Gestor aprovar)
+    posts: [
+        { id: 1, communityId: 1, author: "João Silva", text: "Alguém animado para o Interclasse?", time: "10min atrás", likes: 5, dislikes: 0 },
+        { id: 2, communityId: 1, author: "Maria Souza", text: "Precisamos de mais treinos antes da copa!", time: "1h atrás", likes: 12, dislikes: 1 },
+        { id: 3, communityId: 2, author: "Pedro H.", text: "Nova abertura que aprendi, muito boa!", time: "2 dias atrás", likes: 3, dislikes: 0 }
+    ],
     pendingInscriptions: [
         { id: 501, teamName: "Técnico em Edificações", eventId: 1 },
         { id: 502, teamName: "Licenciatura Física", eventId: 1 }
@@ -59,10 +64,6 @@ const db = {
     notifications: [
         { id: 1, text: "Você foi convidado para o time 'Feras do Basquete'", read: false },
         { id: 2, text: "Resultado do jogo 3º Info x 2º Mec foi aprovado", read: true }
-    ],
-    posts: [
-        { id: 1, author: "João Silva", text: "Alguém sabe se vai ter chuva no dia da final?", time: "10min atrás" },
-        { id: 2, author: "Maria Souza", text: "O time de Automação está muito forte esse ano!", time: "1h atrás" }
     ],
     ranking: [
         { name: "Ana (Aluna)", points: 1500 },
@@ -79,6 +80,7 @@ const db = {
 };
 
 let currentEventId = null;
+let currentCommunityId = null;
 
 // --- SISTEMA DE NAVEGAÇÃO ---
 const historyStack = [];
@@ -141,7 +143,7 @@ function doLogout() {
     }
 }
 
-// --- AUTH & NOTIFICAÇÕES ---
+// --- AUTH & SENHA ---
 
 function doLogin() {
     const email = document.getElementById('login-email').value;
@@ -156,8 +158,18 @@ function doLogin() {
     }
 
     document.getElementById('user-name-display').innerText = db.user.name.split(" ")[0];
+    document.getElementById('user-avatar-post').innerText = db.user.name.charAt(0);
     updateNotificationBadge();
     navigateTo('screen-feed');
+}
+
+function forgotPassword() {
+    const email = document.getElementById('login-email').value;
+    if (!email) {
+        alert("Por favor, preencha o campo de e-mail para recuperar sua senha.");
+        return;
+    }
+    alert(`Um link de recuperação de senha foi enviado para: ${email}\n(Verifique sua caixa de entrada)`);
 }
 
 function updateNotificationBadge() {
@@ -202,7 +214,7 @@ function renderNotifications() {
     });
 }
 
-// --- RENDERIZADORES ---
+// --- EVENTOS ---
 
 function renderEvents(filter = 'all') {
     const container = document.getElementById('events-list');
@@ -225,10 +237,293 @@ function renderEvents(filter = 'all') {
     });
 }
 
-function filterEvents(type) { renderEvents(type); }
+function filterEvents(type) { 
+    renderEvents(type); 
+    document.querySelectorAll('#screen-feed .tag').forEach(t => {
+        if(t.innerText === type || (type === 'all' && t.innerText === 'Todos')) {
+            t.style.backgroundColor = '#e8f5e9'; t.style.color = 'var(--ifsp-green)';
+        } else {
+            t.style.backgroundColor = '#eee'; t.style.color = '#555';
+        }
+    });
+}
+
+// --- COMUNIDADES & SOCIAL ---
+
+function renderCommunities() {
+    const container = document.getElementById('communities-list');
+    container.innerHTML = "";
+    db.communities.forEach(comm => {
+        const card = document.createElement('div');
+        card.className = "comm-card";
+        card.onclick = () => showCommunityDetails(comm.id);
+        card.innerHTML = `
+            <div>
+                <h4 style="margin-bottom:4px;">${comm.name}</h4>
+                <small style="color:#777;">${comm.members} membros</small>
+                <p style="font-size:0.9rem; margin-top:5px;">${comm.description}</p>
+            </div>
+            <span class="material-symbols-outlined" style="color:#ccc;">chevron_right</span>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function handleCreateCommunity(e) {
+    e.preventDefault();
+    const name = document.getElementById('comm-name').value;
+    const desc = document.getElementById('comm-desc').value;
+    db.communities.push({ id: Date.now(), name: name, members: 1, description: desc });
+    alert(`Comunidade "${name}" criada!`);
+    goBack();
+}
+
+function showCommunityDetails(commId) {
+    currentCommunityId = commId;
+    const comm = db.communities.find(c => c.id === commId);
+    if(!comm) return;
+
+    document.getElementById('comm-header').innerHTML = `
+        <h2 style="color: #007bff;">${comm.name}</h2>
+        <p style="color:#666;">${comm.description} • ${comm.members} membros</p>
+    `;
+
+    renderCommunityFeed(commId);
+    navigateTo('screen-community-details');
+}
+
+function renderCommunityFeed(commId) {
+    const container = document.getElementById('community-feed-list');
+    container.innerHTML = "";
+    const posts = db.posts.filter(p => p.communityId === commId);
+
+    if(posts.length === 0) {
+        container.innerHTML = "<p class='text-center text-small'>Nenhum post ainda. Seja o primeiro!</p>";
+        return;
+    }
+
+    posts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.className = "post-item";
+        postDiv.innerHTML = `
+            <div class="post-header">
+                <div class="avatar-small">${post.author.charAt(0)}</div>
+                <div>
+                    <div class="post-author">${post.author}</div>
+                    <div class="post-time">${post.time}</div>
+                </div>
+            </div>
+            <div class="post-content">${post.text}</div>
+            <div class="post-actions">
+                <button class="action-btn" onclick="handleLike(${post.id})">
+                    <span class="material-symbols-outlined">thumb_up</span> ${post.likes}
+                </button>
+                <button class="action-btn" onclick="handleDownvote(${post.id})">
+                    <span class="material-symbols-outlined">thumb_down</span> ${post.dislikes}
+                </button>
+                <button class="action-btn" onclick="alert('Comentários em breve!')">
+                    <span class="material-symbols-outlined">comment</span> Comentar
+                </button>
+            </div>
+        `;
+        container.appendChild(postDiv);
+    });
+}
+
+function handlePost() {
+    const input = document.getElementById('post-input');
+    if(!input.value) return;
+    
+    db.posts.unshift({ 
+        id: Date.now(), 
+        communityId: currentCommunityId, 
+        author: db.user.name, 
+        text: input.value, 
+        time: "Agora mesmo",
+        likes: 0, 
+        dislikes: 0 
+    });
+    
+    input.value = "";
+    renderCommunityFeed(currentCommunityId);
+}
+
+function handleLike(postId) {
+    const post = db.posts.find(p => p.id === postId);
+    if(post) {
+        post.likes++;
+        renderCommunityFeed(currentCommunityId);
+    }
+}
+
+function handleDownvote(postId) {
+    const post = db.posts.find(p => p.id === postId);
+    if(post) {
+        post.dislikes++;
+        renderCommunityFeed(currentCommunityId);
+    }
+}
+
+
+// --- GESTÃO DE EVENTOS, TIMES E INSCRIÇÕES ---
+
+function handleCreateTeam(e) {
+    e.preventDefault();
+    const name = document.getElementById('team-name').value;
+    const mod = document.getElementById('team-modality').value;
+    db.teams.push({ id: Date.now(), nome: name, modalidade: mod });
+    alert(`Time "${name}" criado com sucesso!`);
+    goBack();
+}
+
+function handleCreateEvent(e) {
+    e.preventDefault();
+    const newEvent = {
+        id: db.events.length + 1,
+        nome: document.getElementById('evt-nome').value,
+        descricao: document.getElementById('evt-desc').value,
+        dataInicio: document.getElementById('evt-inicio').value.split('-').reverse().join('/'),
+        status: document.getElementById('evt-status').value,
+        modalidade: document.getElementById('evt-modalidade').value,
+        amIParticipating: false // Criador não participa automaticamente como atleta
+    };
+    db.events.unshift(newEvent);
+    alert("Evento cadastrado com sucesso!");
+    document.getElementById('form-create-event').reset();
+    navigateTo('screen-feed');
+}
+
+function showEventDetails(eventId) {
+    currentEventId = eventId;
+    const evt = db.events.find(e => e.id === eventId);
+    if (!evt) return;
+
+    // Verifica se o usuário já tem alguma pendência ou participação
+    const statusParticipacao = evt.amIParticipating ? 
+        `<span style="color:green; font-weight:bold;">✔ Sua equipe está inscrita</span>` : 
+        `<button class="btn btn-secondary" onclick="trySubscribeTeam(${evt.id})">Inscrever Time</button>`;
+
+    document.getElementById('event-info-container').innerHTML = `
+        <h2 style="color: var(--ifsp-green-dark);">${evt.nome}</h2>
+        <p style="margin-top: 5px;">${evt.descricao}</p>
+        <div style="margin-top: 10px; font-size: 0.9rem; color: #555;">
+            <span>📅 Início: ${evt.dataInicio}</span> | <span>🏆 ${evt.modalidade}</span>
+        </div>
+        <div style="margin-top: 15px;">${statusParticipacao}</div>
+    `;
+
+    const approvalArea = document.getElementById('admin-approval-area');
+    if (db.user.role === 'GESTOR') {
+        approvalArea.classList.remove('hidden');
+        renderPendingInscriptions();
+    } else {
+        approvalArea.classList.add('hidden');
+    }
+
+    const matchesContainer = document.getElementById('matches-list');
+    matchesContainer.innerHTML = "";
+    const eventMatches = db.matches.filter(m => m.eventoId === eventId); 
+    
+    if (eventMatches.length === 0) {
+        matchesContainer.innerHTML = "<p class='text-center text-small'>Tabela de jogos ainda não gerada.</p>";
+    } else {
+        eventMatches.forEach(match => {
+            const matchCard = document.createElement('div');
+            matchCard.className = 'card';
+            matchCard.style.borderLeftColor = '#999';
+            matchCard.onclick = () => showMatchDetails(match);
+            matchCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold;">${match.timeA}</span>
+                    <span style="background: #eee; padding: 2px 8px; border-radius: 4px;">${match.placarA} x ${match.placarB}</span>
+                    <span style="font-weight: bold;">${match.timeB}</span>
+                </div>
+                <div class="text-center text-small" style="margin-top: 8px;">${match.status}</div>`;
+            matchesContainer.appendChild(matchCard);
+        });
+    }
+
+    navigateTo('screen-event-details');
+}
+
+// Nova Lógica de Inscrição de Time
+function trySubscribeTeam(eventId) {
+    const evt = db.events.find(e => e.id === eventId);
+    
+    // Filtra times do usuário que sejam da mesma modalidade do evento
+    const eligibleTeams = db.teams.filter(t => t.modalidade === evt.modalidade);
+
+    if (eligibleTeams.length === 0) {
+        alert(`Você não possui nenhum time de ${evt.modalidade}.\nCrie um time primeiro na aba "Times".`);
+        navigateTo('screen-create-team');
+        return;
+    }
+
+    // Se tiver só 1, inscreve direto (ou abre seleção se tiver mais)
+    if (eligibleTeams.length >= 1) {
+        const list = document.getElementById('team-select-list');
+        list.innerHTML = "";
+        eligibleTeams.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = "btn btn-secondary";
+            btn.style.marginBottom = "5px";
+            btn.innerText = t.nome;
+            btn.onclick = () => confirmSubscription(t.nome);
+            list.appendChild(btn);
+        });
+        document.getElementById('modal-team-select').classList.remove('hidden');
+    }
+}
+
+function closeTeamSelect() {
+    document.getElementById('modal-team-select').classList.add('hidden');
+}
+
+function confirmSubscription(teamName) {
+    // Cria solicitação pendente
+    db.pendingInscriptions.push({ id: Date.now(), teamName: teamName, eventId: currentEventId });
+    closeTeamSelect();
+    alert(`Solicitação de inscrição enviada para o time "${teamName}"!\nAguarde a aprovação do gestor.`);
+}
+
+
+function renderPendingInscriptions() {
+    const container = document.getElementById('pending-teams-list');
+    container.innerHTML = "";
+    const pendings = db.pendingInscriptions.filter(p => p.eventId === currentEventId);
+    
+    if(pendings.length === 0) {
+        container.innerHTML = "<small style='color:#777'>Nenhuma solicitação pendente.</small>";
+        return;
+    }
+
+    pendings.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "approval-item";
+        div.innerHTML = `
+            <span>${item.teamName}</span>
+            <div class="approval-actions">
+                <button class="btn-small" onclick="approveTeam(this)">✓</button>
+                <button class="btn-danger-small" onclick="rejectTeam(this)">✕</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function approveTeam(btn) {
+    const item = btn.parentElement.parentElement;
+    item.innerHTML = "<span style='color:green; font-weight:bold;'>Aprovado!</span>";
+    setTimeout(() => item.remove(), 1000);
+}
+
+function rejectTeam(btn) {
+    const item = btn.parentElement.parentElement;
+    item.innerHTML = "<span style='color:red; font-weight:bold;'>Rejeitado.</span>";
+    setTimeout(() => item.remove(), 1000);
+}
 
 function renderMyTeamsAndEvents() {
-    // Render Teams
     const teamContainer = document.getElementById('my-teams-slider');
     teamContainer.innerHTML = "";
     db.teams.forEach(team => {
@@ -238,7 +533,6 @@ function renderMyTeamsAndEvents() {
         teamContainer.appendChild(chip);
     });
 
-    // Render Events
     const eventContainer = document.getElementById('my-events-list');
     const emptyState = document.getElementById('empty-my-events');
     eventContainer.innerHTML = "";
@@ -261,35 +555,6 @@ function renderMyTeamsAndEvents() {
             eventContainer.appendChild(card);
         });
     }
-}
-
-// --- COMUNIDADES (NOVO) ---
-
-function renderCommunities() {
-    const container = document.getElementById('communities-list');
-    container.innerHTML = "";
-    db.communities.forEach(comm => {
-        const card = document.createElement('div');
-        card.className = "comm-card";
-        card.innerHTML = `
-            <div>
-                <h4 style="margin-bottom:4px;">${comm.name}</h4>
-                <small style="color:#777;">${comm.members} membros</small>
-                <p style="font-size:0.9rem; margin-top:5px;">${comm.description}</p>
-            </div>
-            <button class="btn-small" style="background:white; border:1px solid #007bff; color:#007bff;" onclick="alert('Você entrou na comunidade!')">Entrar</button>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function handleCreateCommunity(e) {
-    e.preventDefault();
-    const name = document.getElementById('comm-name').value;
-    const desc = document.getElementById('comm-desc').value;
-    db.communities.push({ id: Date.now(), name: name, members: 1, description: desc });
-    alert(`Comunidade "${name}" criada!`);
-    goBack();
 }
 
 function renderRanking() {
@@ -332,158 +597,6 @@ function renderProfile() {
         interestsContainer.appendChild(chip);
     });
 }
-
-// --- AÇÕES: TIMES, EVENTOS E GESTÃO ---
-
-function handleCreateTeam(e) {
-    e.preventDefault();
-    const name = document.getElementById('team-name').value;
-    const mod = document.getElementById('team-modality').value;
-    db.teams.push({ id: Date.now(), nome: name, modalidade: mod });
-    alert(`Time "${name}" criado com sucesso!`);
-    goBack();
-}
-
-function handleCreateEvent(e) {
-    e.preventDefault();
-    const newEvent = {
-        id: db.events.length + 1,
-        nome: document.getElementById('evt-nome').value,
-        descricao: document.getElementById('evt-desc').value,
-        dataInicio: document.getElementById('evt-inicio').value.split('-').reverse().join('/'),
-        status: document.getElementById('evt-status').value,
-        modalidade: document.getElementById('evt-modalidade').value,
-        amIParticipating: true 
-    };
-    db.events.unshift(newEvent);
-    alert("Evento cadastrado com sucesso!");
-    document.getElementById('form-create-event').reset();
-    navigateTo('screen-feed');
-}
-
-function showEventDetails(eventId) {
-    currentEventId = eventId;
-    const evt = db.events.find(e => e.id === eventId);
-    if (!evt) return;
-
-    // Header do Evento
-    const infoContainer = document.getElementById('event-info-container');
-    const btnLabel = evt.amIParticipating ? "Gerenciar Inscrição" : "Inscrever Time";
-    
-    infoContainer.innerHTML = `
-        <h2 style="color: var(--ifsp-green-dark);">${evt.nome}</h2>
-        <p style="margin-top: 5px;">${evt.descricao}</p>
-        <div style="margin-top: 10px; font-size: 0.9rem; color: #555;">
-            <span>📅 Início: ${evt.dataInicio}</span> | <span>🏆 ${evt.modalidade}</span>
-        </div>
-        <button class="btn btn-secondary" style="margin-top: 10px;">${btnLabel}</button>
-    `;
-
-    // Área de Gestão (Aprovação de Inscrições)
-    const approvalArea = document.getElementById('admin-approval-area');
-    if (db.user.role === 'GESTOR') {
-        approvalArea.classList.remove('hidden');
-        renderPendingInscriptions();
-    } else {
-        approvalArea.classList.add('hidden');
-    }
-
-    // Listar Jogos
-    const matchesContainer = document.getElementById('matches-list');
-    matchesContainer.innerHTML = "";
-    const eventMatches = db.matches; 
-    eventMatches.forEach(match => {
-        const matchCard = document.createElement('div');
-        matchCard.className = 'card';
-        matchCard.style.borderLeftColor = '#999';
-        matchCard.onclick = () => showMatchDetails(match);
-        matchCard.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: bold;">${match.timeA}</span>
-                <span style="background: #eee; padding: 2px 8px; border-radius: 4px;">${match.placarA} x ${match.placarB}</span>
-                <span style="font-weight: bold;">${match.timeB}</span>
-            </div>
-            <div class="text-center text-small" style="margin-top: 8px;">${match.status}</div>`;
-        matchesContainer.appendChild(matchCard);
-    });
-
-    renderEventWall();
-    switchEventTab('matches');
-    navigateTo('screen-event-details');
-}
-
-function renderPendingInscriptions() {
-    const container = document.getElementById('pending-teams-list');
-    container.innerHTML = "";
-    const pendings = db.pendingInscriptions.filter(p => p.eventId === 1); // Hardcoded for demo
-    
-    if(pendings.length === 0) {
-        container.innerHTML = "<small style='color:#777'>Nenhuma solicitação pendente.</small>";
-        return;
-    }
-
-    pendings.forEach(item => {
-        const div = document.createElement('div');
-        div.className = "approval-item";
-        div.innerHTML = `
-            <span>${item.teamName}</span>
-            <div class="approval-actions">
-                <button class="btn-small" onclick="approveTeam(this)">✓</button>
-                <button class="btn-danger-small" onclick="rejectTeam(this)">✕</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-function approveTeam(btn) {
-    const item = btn.parentElement.parentElement;
-    item.innerHTML = "<span style='color:green; font-weight:bold;'>Aprovado!</span>";
-    setTimeout(() => item.remove(), 1000);
-}
-
-function rejectTeam(btn) {
-    const item = btn.parentElement.parentElement;
-    item.innerHTML = "<span style='color:red; font-weight:bold;'>Rejeitado.</span>";
-    setTimeout(() => item.remove(), 1000);
-}
-
-function switchEventTab(tabName) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    
-    if(tabName === 'matches') {
-        document.querySelector('.tab:nth-child(1)').classList.add('active');
-        document.getElementById('tab-matches').classList.add('active');
-    } else {
-        document.querySelector('.tab:nth-child(2)').classList.add('active');
-        document.getElementById('tab-wall').classList.add('active');
-    }
-}
-
-function renderEventWall() {
-    const wall = document.getElementById('posts-list');
-    wall.innerHTML = "";
-    db.posts.forEach(post => {
-        const div = document.createElement('div');
-        div.className = "post-item";
-        div.innerHTML = `
-            <div class="post-header"><span class="post-author">${post.author}</span> <span>${post.time}</span></div>
-            <div>${post.text}</div>
-        `;
-        wall.appendChild(div);
-    });
-}
-
-function handlePost() {
-    const input = document.getElementById('post-input');
-    if(!input.value) return;
-    db.posts.unshift({ id: Date.now(), author: db.user.name, text: input.value, time: "Agora" });
-    input.value = "";
-    renderEventWall();
-}
-
-// --- DETALHES DA PARTIDA & VOTAÇÃO ---
 
 function showMatchDetails(match) {
     document.getElementById('match-title-display').innerText = "Detalhes da Partida";
