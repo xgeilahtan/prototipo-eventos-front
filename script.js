@@ -6,7 +6,7 @@ const db = {
         { id: 2, name: "Ana Aluna", email: "aluno@aluno.ifsp.edu.br", password: "123", role: "USER", points: 1500, interests: ["Volei"] },
         { id: 3, name: "Admin Sistema", email: "admin@ifsp.edu.br", password: "123", role: "ADMIN", points: 0, interests: [] }
     ],
-    // HU 04: array de modalidades
+    // HU 04: Modalidades agora é array
     events: [
         { id: 1, nome: "Copa IFSP Futsal", descricao: "Torneio tradicional.", dataInicio: "10/12/2024", status: "INSCRICOES_ABERTAS", modalidades: ["Futsal"], amIParticipating: false },
         { id: 2, nome: "Jogos de Verão", descricao: "Multiesportes.", dataInicio: "15/12/2024", status: "AGUARDANDO_INICIO", modalidades: ["Futsal", "Volei", "Handebol"], amIParticipating: false }
@@ -14,7 +14,6 @@ const db = {
     matches: [
         { id: 101, eventoId: 1, timeA: "3º Informática", timeB: "2º Mecatrônica", placarA: 2, placarB: 1, status: "ANDAMENTO" }
     ],
-    // Times que o usuário É dono/membro
     teams: [
         { id: 1, ownerId: 2, nome: "3º Informática", modalidade: "Futsal" }, // Time da Ana
         { id: 2, ownerId: 1, nome: "Vôlei Stars", modalidade: "Volei" } // Time do Carlos
@@ -167,11 +166,16 @@ function handleRegister(e) {
     navigateTo('screen-feed');
 }
 
-function forgotPassword() {
-    const email = prompt("Digite seu e-mail cadastrado para recuperar a senha:");
-    if (email) {
-        alert(`Um link de recuperação foi enviado para ${email}. Verifique sua caixa de entrada (Spam).`);
-    }
+function openForgotPassword() {
+    document.getElementById('modal-forgot-password').classList.remove('hidden');
+}
+
+function sendRecoveryEmail() {
+    const email = document.getElementById('recovery-email').value;
+    if (!email) return alert("Por favor, preencha o campo de e-mail.");
+    
+    alert(`Um link de recuperação de senha foi enviado para: ${email}\n(Verifique sua caixa de entrada e spam)`);
+    document.getElementById('modal-forgot-password').classList.add('hidden');
 }
 
 // --- GESTÃO DE USUÁRIOS (HU 14 - Admin) ---
@@ -329,7 +333,17 @@ function deleteEvent(id) {
     }
 }
 
-function filterEvents(type) { renderEvents(type); }
+function filterEvents(type) { 
+    renderEvents(type); 
+    // Visual update
+    document.querySelectorAll('#screen-feed .tag').forEach(t => {
+        if(t.innerText === type || (type === 'all' && t.innerText === 'Todos')) {
+            t.style.backgroundColor = '#e8f5e9'; t.style.color = 'var(--ifsp-green)';
+        } else {
+            t.style.backgroundColor = '#eee'; t.style.color = '#555';
+        }
+    });
+}
 
 
 // --- DETALHES DO EVENTO & HU 09 (CHAVES) & HU 12 (APROVAÇÃO) ---
@@ -599,7 +613,7 @@ function renderCommunityFeed(commId) {
             <div class="post-content">${p.text}</div>
             <div class="post-actions">
                 <button class="action-btn" onclick="likePost(${p.id})"><span class="material-symbols-outlined">thumb_up</span> ${p.likes}</button>
-                <button class="action-btn"><span class="material-symbols-outlined">comment</span></button>
+                <button class="action-btn" onclick="alert('Funcionalidade em desenvolvimento.')"><span class="material-symbols-outlined">comment</span></button>
             </div>
         `;
         list.appendChild(div);
@@ -611,7 +625,7 @@ function handlePost() {
     if (!txt) return;
     db.posts.unshift({ 
         id: Date.now(), communityId: currentCommunityId, 
-        author: db.currentUser.name, text: txt, time: "Agora", likes: 0 
+        author: db.currentUser.name, text: txt, time: "Agora", likes: 0, dislikes: 0 
     });
     document.getElementById('post-input').value = "";
     renderCommunityFeed(currentCommunityId);
@@ -688,6 +702,17 @@ function toggleNotifications() {
         db.notifications.forEach(n => {
             list.innerHTML += `<div style="padding:10px; border-bottom:1px solid #eee;">${n.text}</div>`;
         });
+    }
+}
+
+function updateNotificationBadge() {
+    const unread = db.notifications.filter(n => !n.read).length;
+    const badge = document.getElementById('notif-badge');
+    if (unread > 0) {
+        badge.innerText = unread;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
     }
 }
 
