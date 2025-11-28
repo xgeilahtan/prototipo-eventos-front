@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IFSP Eventos - Guarulhos</title>
-    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
-    <!-- Ícones Google -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
@@ -38,7 +36,6 @@
 
     <!-- ================= MODAIS ================= -->
 
-    <!-- Modal Notificações -->
     <div id="modal-notifications" class="modal-overlay hidden" onclick="if(event.target === this) toggleNotifications()">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -49,43 +46,28 @@
         </div>
     </div>
 
-    <!-- Modal Recuperação de Senha -->
-    <div id="modal-forgot-password" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3>Recuperar Senha</h3>
-            <p class="text-small" style="margin-bottom: 15px;">Informe seu e-mail institucional para receber o link de redefinição.</p>
-            <div class="form-group">
-                <input type="email" id="recovery-email" placeholder="email@ifsp.edu.br">
-            </div>
-            <button class="btn btn-primary" onclick="sendRecoveryEmail()">Enviar Link</button>
-            <button class="btn btn-secondary" style="margin-top: 10px;" onclick="document.getElementById('modal-forgot-password').classList.add('hidden')">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Modal Seleção de Time -->
     <div id="modal-team-select" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Escolha um Time</h3>
-            <p class="text-small" style="margin-bottom: 15px;">Qual time deseja inscrever nesta competição?</p>
+            <p class="text-small" style="margin-bottom: 15px;">Qual time deseja inscrever?</p>
             <div id="team-select-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;"></div>
             <button class="btn btn-secondary" onclick="closeTeamSelect()">Cancelar</button>
         </div>
     </div>
 
-    <!-- Modal Gerar Chaves (HU 09) -->
     <div id="modal-generate-brackets" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Gerar Chaves</h3>
-            <p class="text-small" style="margin-bottom: 15px;">Atenção: Isso irá substituir a tabela de jogos atual.</p>
+            <p class="text-small" style="margin-bottom: 15px;">Atenção: Substituirá a tabela atual.</p>
             <div class="form-group">
-                <label>Formato da Competição</label>
+                <label>Formato</label>
                 <select id="bracket-format">
-                    <option value="MATA_MATA">Mata-mata (Eliminatórias)</option>
-                    <option value="PONTOS_CORRIDOS">Pontos Corridos (Liga)</option>
-                    <option value="GRUPOS">Fases de Grupo + Final</option>
+                    <option value="MATA_MATA">Mata-mata</option>
+                    <option value="PONTOS_CORRIDOS">Pontos Corridos</option>
+                    <option value="GRUPOS">Fases de Grupo</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="confirmGenerateBrackets()">Gerar Tabela</button>
+            <button class="btn btn-primary" onclick="confirmGenerateBrackets()">Confirmar</button>
             <button class="btn btn-secondary" onclick="document.getElementById('modal-generate-brackets').classList.add('hidden')" style="margin-top: 10px;">Cancelar</button>
         </div>
     </div>
@@ -100,8 +82,8 @@
         </div>
         <div style="background: white; padding: 24px; border-radius: 16px; color: #333; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
             <div class="form-group">
-                <label>E-mail Institucional</label>
-                <input type="email" id="login-email" placeholder="seu.email@ifsp.edu.br" value="gestor@ifsp.edu.br">
+                <label>E-mail</label>
+                <input type="email" id="login-email" placeholder="ex: joao@aluno.ifsp.edu.br" value="aluno@aluno.ifsp.edu.br">
             </div>
             <div class="form-group">
                 <label>Senha</label>
@@ -109,7 +91,7 @@
             </div>
             <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
             <div class="text-center" style="margin-top: 15px;">
-                <a href="#" onclick="openForgotPassword()" style="color: var(--ifsp-green); font-size: 0.9rem; text-decoration: none;">Esqueci minha senha</a>
+                <a href="#" onclick="forgotPassword()" style="color: var(--ifsp-green); font-size: 0.9rem; text-decoration: none;">Esqueci minha senha</a>
             </div>
             <div class="text-center" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
                 <span class="text-small">Não tem conta? </span>
@@ -117,15 +99,15 @@
             </div>
         </div>
         <div class="text-center" style="margin-top: 30px; font-size: 0.75rem; opacity: 0.7;">
-            <p>Acesso Rápido para Teste:</p>
-            <p>Admin: <strong>admin@ifsp.edu.br</strong> | Gestor: <strong>gestor@ifsp.edu.br</strong></p>
+            <p>Admin: admin@ifsp.edu.br | Gestor: gestor@ifsp.edu.br | Aluno: aluno@aluno.ifsp.edu.br</p>
         </div>
     </div>
 
-    <!-- TELA: REGISTRO (HU 05) -->
+    <!-- TELA: REGISTRO -->
     <div id="screen-register" class="view" style="justify-content: center;">
         <div class="card" style="border:none; box-shadow:none; background:transparent;">
             <h2 style="margin-bottom: 20px; color: var(--ifsp-green-dark); text-align: center;">Nova Conta</h2>
+            <p class="text-small text-center" style="margin-bottom: 20px;">Use seu e-mail institucional (@aluno ou @ifsp).</p>
             <form onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label>Nome Completo</label>
@@ -137,55 +119,48 @@
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
-                    <input type="password" id="reg-pass" required placeholder="Mínimo 6 caracteres">
+                    <input type="password" id="reg-pass" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Criar Conta</button>
-                <button type="button" class="btn btn-secondary" onclick="navigateTo('screen-login')">Voltar ao Login</button>
+                <button type="button" class="btn btn-secondary" onclick="navigateTo('screen-login')">Voltar</button>
             </form>
         </div>
     </div>
 
-    <!-- TELA 2: FEED (HOME) -->
+    <!-- TELA 2: FEED -->
     <div id="screen-feed" class="view">
         <h2 style="margin-bottom: 16px;">Eventos</h2>
-        
-        <!-- Filtros de Modalidade (Injetados pelo JS) -->
+        <!-- Filtros Dinâmicos -->
         <div id="feed-filters" class="filters-scroll">
-            <!-- Tags serão inseridas via JS -->
+            <span class="tag aberto" onclick="filterEvents('all')" style="cursor:pointer;">Todos</span>
+            <!-- Modalidades inseridas via JS -->
         </div>
 
-        <div id="events-list" style="margin-top: 10px;">
-            <!-- Lista de Cards inserida via JS -->
-        </div>
+        <div id="events-list" style="margin-top: 10px;"></div>
 
-        <!-- Botão Flutuante (Fab) - Apenas Gestor/Admin -->
+        <!-- FAB -->
         <div id="fab-create" class="btn-float hidden" onclick="prepareCreateEvent()" title="Novo Evento">
             <span class="material-symbols-outlined">add</span>
         </div>
     </div>
 
-    <!-- TELA: ADMIN PANEL (HU 14) -->
+    <!-- TELA: ADMIN -->
     <div id="screen-admin-panel" class="view">
         <h2 style="margin-bottom: 16px;">Painel Administrativo</h2>
         
         <div class="card" style="border-left-color: #007bff;">
             <h3>Gestão de Usuários</h3>
-            <p class="text-small">Permitir ou revogar acesso de gestores.</p>
-            <div id="admin-users-list" style="margin-top:10px; max-height: 200px; overflow-y: auto;">
-                <!-- Lista inserida via JS -->
-            </div>
+            <p class="text-small">Apenas emails @ifsp.edu.br podem ser gestores.</p>
+            <div id="admin-users-list" style="margin-top:10px; max-height: 200px; overflow-y: auto;"></div>
         </div>
 
         <div class="card" style="border-left-color: #e65100;">
             <h3>Modalidades do Sistema</h3>
-            <p class="text-small">Adicione novos esportes ao sistema.</p>
             <div class="form-group" style="display: flex; gap: 10px; margin-top: 10px;">
                 <input type="text" id="new-modality-input" placeholder="Nova modalidade..." style="flex:1;">
                 <button class="btn-small" onclick="createNewModality()">Adicionar</button>
             </div>
-            <div id="admin-modalities-list" class="interest-chips" style="margin-top: 10px;">
-                <!-- Chips inseridos via JS -->
-            </div>
+            <div id="admin-modalities-list" class="interest-chips" style="margin-top: 10px;"></div>
         </div>
     </div>
 
@@ -200,22 +175,19 @@
         <div id="communities-list"></div>
     </div>
 
-    <!-- TELA: DETALHES DA COMUNIDADE (FEED SOCIAL) -->
+    <!-- TELA: DETALHES DA COMUNIDADE -->
     <div id="screen-community-details" class="view">
         <div id="comm-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;"></div>
-        
-        <!-- Área de Postagem -->
         <div class="post-creator-area">
             <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
                 <div class="avatar-small" id="user-avatar-post">U</div>
-                <input type="text" id="post-input" placeholder="Compartilhe algo com o grupo..." style="flex:1; border:none; background:transparent; outline:none;">
+                <input type="text" id="post-input" placeholder="Compartilhe algo..." style="flex:1; border:none; background:transparent; outline:none;">
             </div>
             <div style="display:flex; justify-content:flex-end;">
                 <button class="btn-small" onclick="handlePost()">Publicar</button>
             </div>
         </div>
-
-        <h4 style="margin-bottom: 10px; color:#555;">Discussões Recentes</h4>
+        <h4 style="margin-bottom: 10px; color:#555;">Discussões</h4>
         <div id="community-feed-list"></div>
     </div>
 
@@ -225,17 +197,17 @@
         <form onsubmit="handleCreateCommunity(event)">
             <div class="form-group">
                 <label>Nome da Comunidade</label>
-                <input type="text" id="comm-name" required placeholder="Ex: Torcida Organizada">
+                <input type="text" id="comm-name" required>
             </div>
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea id="comm-desc" rows="3" required placeholder="Objetivo do grupo..."></textarea>
+                <textarea id="comm-desc" rows="3" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Criar Comunidade</button>
         </form>
     </div>
 
-    <!-- TELA: MEUS TIMES E INSCRIÇÕES -->
+    <!-- TELA: MEUS TIMES -->
     <div id="screen-my-events" class="view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h3>Meus Times</h3>
@@ -243,64 +215,68 @@
                 <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: -2px;">add</span> Novo Time
             </button>
         </div>
-        
-        <!-- Slider Horizontal de Times -->
         <div id="my-teams-slider" class="horizontal-scroll-container"></div>
-
         <div class="divider"></div>
-
         <h3 style="margin-bottom: 16px; margin-top: 10px;">Minhas Inscrições Ativas</h3>
         <div id="my-events-list"></div>
-        
         <div id="empty-my-events" class="text-center hidden" style="margin-top: 40px; color: #999;">
             <span class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.5;">event_busy</span>
-            <p style="margin-top: 10px;">Você não está inscrito em eventos.</p>
-            <button class="btn btn-secondary" style="width: auto; margin-top: 15px;" onclick="navigateTo('screen-feed')">Ver Eventos Abertos</button>
+            <p style="margin-top: 10px;">Sem inscrições ativas.</p>
+            <button class="btn btn-secondary" style="width: auto; margin-top: 15px;" onclick="navigateTo('screen-feed')">Ver Eventos</button>
         </div>
     </div>
 
-    <!-- TELA: RANKING GERAL -->
+    <!-- TELA: RANKING -->
     <div id="screen-ranking" class="view">
         <h2 style="margin-bottom: 16px;">Ranking Geral 🏆</h2>
-        <p class="text-small" style="margin-bottom: 15px;">Pontuação baseada em participação e vitórias.</p>
         <div class="ranking-table" id="ranking-list"></div>
     </div>
 
-    <!-- TELA: PERFIL -->
+    <!-- TELA: PERFIL (RECUPERADA AQUI) -->
     <div id="screen-profile" class="view">
         <h2 style="margin-bottom: 16px;">Meu Perfil</h2>
         <div class="profile-header">
             <div class="avatar" id="profile-avatar">A</div>
-            <h3 id="profile-name">Usuário</h3>
-            <span id="profile-email" style="color: #777; font-size: 0.9rem;">email@ifsp.edu.br</span>
+            <h3 id="profile-name" style="margin-bottom: 5px;">Usuário</h3>
+            <span id="profile-email" style="color: #777; font-size: 0.9rem;">email</span>
             <span id="profile-role-badge" class="role-badge">USER</span>
+            
+            <!-- GRID DE ESTATÍSTICAS (RANK, PONTOS, NÍVEL) -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="profile-points">0</div>
+                    <div class="stat-label">Pontos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="profile-level">BRONZE</div>
+                    <div class="stat-label">Nível</div>
+                </div>
+                <div class="stat-item clickable" onclick="navigateTo('screen-ranking')">
+                    <div class="stat-value" id="profile-rank">-</div>
+                    <div class="stat-label" style="text-decoration: underline; color: var(--ifsp-green);">Ranking</div>
+                </div>
+            </div>
         </div>
 
-        <h4 style="margin-bottom: 10px;">Esportes de Interesse (HU 07)</h4>
+        <h4 style="margin-bottom: 10px;">Esportes de Interesse</h4>
         <div class="interest-chips" id="interests-list"></div>
-
-        <div style="margin-top: 30px;">
-            <div class="divider"></div>
-            <div class="text-center" style="margin-top: 20px;">
-                <button class="btn-danger-small" style="width: 100%; background: transparent; color: var(--ifsp-red); border: 1px solid var(--ifsp-red);" onclick="doLogout()">
-                    Sair da Conta
-                </button>
-            </div>
+        <div class="text-center" style="margin-top: 40px;">
+            <button class="btn-danger-small" style="width: 100%; background: transparent; color: var(--ifsp-red); border: 1px solid var(--ifsp-red);" onclick="doLogout()">Sair da Conta</button>
         </div>
     </div>
 
-    <!-- TELA: CADASTRO/EDIÇÃO DE EVENTO (HU 01, 02, 04) -->
+    <!-- TELA: CADASTRO/EDIÇÃO DE EVENTO -->
     <div id="screen-create-event" class="view">
         <h2 style="margin-bottom: 20px;" id="form-event-title">Novo Evento</h2>
         <form id="form-create-event" onsubmit="handleSaveEvent(event)">
             <input type="hidden" id="evt-id">
             <div class="form-group">
                 <label>Nome do Evento</label>
-                <input type="text" id="evt-nome" required placeholder="Ex: Interclasse 2024">
+                <input type="text" id="evt-nome" required>
             </div>
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea id="evt-desc" rows="3" required placeholder="Detalhes da competição..."></textarea>
+                <textarea id="evt-desc" rows="3" required></textarea>
             </div>
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
@@ -314,14 +290,14 @@
             </div>
             
             <div class="form-group">
-                <label>Modalidades (Múltipla Escolha - HU 04)</label>
+                <label>Modalidades (Selecione várias)</label>
                 <div class="checkbox-group" id="evt-modalidades-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
                     <!-- Inserido via JS -->
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Status Inicial</label>
+                <label>Status</label>
                 <select id="evt-status">
                     <option value="INSCRICOES_ABERTAS">Inscrições Abertas</option>
                     <option value="AGUARDANDO_INICIO">Aguardando Início</option>
@@ -347,100 +323,70 @@
                     <!-- Inserido via JS -->
                 </select>
             </div>
-            <p class="text-small" style="color:#666; margin-bottom: 15px;">Você será cadastrado automaticamente como capitão.</p>
             <button type="submit" class="btn btn-primary">Criar Time</button>
         </form>
     </div>
 
-    <!-- TELA 4: DETALHES DO EVENTO -->
+    <!-- TELA: DETALHES EVENTO -->
     <div id="screen-event-details" class="view">
         <div id="event-info-container" style="margin-bottom: 15px;"></div>
-        
-        <!-- ÁREA DO GESTOR: AÇÕES -->
-        <div id="manager-actions-area" class="hidden" style="margin-bottom: 20px; display: flex; gap: 10px;">
-            <!-- Inserido via JS -->
-        </div>
-
-        <!-- ÁREA DO GESTOR: APROVAÇÃO (HU 12) -->
+        <div id="manager-actions-area" class="hidden" style="margin-bottom: 20px; display: flex; gap: 10px;"></div>
         <div id="admin-approval-area" class="hidden" style="background-color: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2;">
-            <h4 style="color: #e65100; margin-bottom: 10px; display: flex; align-items: center;">
-                <span class="material-symbols-outlined" style="font-size: 1.2rem; margin-right: 5px;">pending_actions</span>
-                Solicitações Pendentes
-            </h4>
+            <h4 style="color: #e65100; margin-bottom: 10px;">Aprovar Inscrições</h4>
             <div id="pending-teams-list"></div>
         </div>
-
         <div style="background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-            <strong style="color: #555;">Jogos da Competição</strong>
+            <strong style="color: #555;">Jogos</strong>
         </div>
         <div id="matches-list"></div>
     </div>
 
-    <!-- TELA 5: SÚMULA DA PARTIDA (HU 11 e 12) -->
+    <!-- TELA: SÚMULA -->
     <div id="screen-match-details" class="view">
         <div class="card text-center" style="margin-bottom: 20px;">
             <span class="tag andamento" style="margin-bottom: 10px;">EM ANDAMENTO</span>
-            <h2 style="color: var(--ifsp-green);" id="match-title-display">Detalhes da Partida</h2>
-            
+            <h2 style="color: var(--ifsp-green);" id="match-title-display">Detalhes</h2>
             <div class="match-score" style="margin: 20px 0;">
-                <div style="flex: 1;">
-                    <strong style="display: block; font-size: 1.1rem;" id="team-a-display">Time A</strong>
-                </div>
+                <div style="flex: 1;"><strong id="team-a-display">Time A</strong></div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="number" id="score-a" class="team-score" value="0">
-                    <span>X</span>
-                    <input type="number" id="score-b" class="team-score" value="0">
+                    <input type="number" id="score-a" class="team-score" value="0"><span>X</span><input type="number" id="score-b" class="team-score" value="0">
                 </div>
-                <div style="flex: 1;">
-                    <strong style="display: block; font-size: 1.1rem;" id="team-b-display">Time B</strong>
-                </div>
+                <div style="flex: 1;"><strong id="team-b-display">Time B</strong></div>
             </div>
-
             <div class="form-group" style="text-align: left;">
-                <label>Súmula / Ocorrências</label>
-                <textarea rows="3" placeholder="Gols, cartões, observações..."></textarea>
+                <label>Súmula</label>
+                <textarea rows="3" placeholder="Observações..."></textarea>
             </div>
-
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-secondary" style="flex:1;" onclick="saveMatchResult()">Sugerir Resultado</button>
-                <button id="btn-approve-result" class="btn btn-primary" style="flex:1;" onclick="approveResult()">Aprovar (Gestor)</button>
+                <button class="btn btn-secondary" style="flex:1;" onclick="saveMatchResult()">Sugerir</button>
+                <button id="btn-approve-result" class="btn btn-primary" style="flex:1;" onclick="approveResult()">Aprovar</button>
             </div>
         </div>
-
-        <!-- VOTAÇÃO (Craque da Galera) -->
-        <h3 style="margin-bottom: 10px;">Craque da Galera ⚽</h3>
-        <p class="text-small" style="margin-bottom: 10px;">Vote no melhor jogador em campo!</p>
+        <h3 style="margin-bottom: 10px;">Craque da Galera</h3>
         <div id="voting-list"></div>
     </div>
 
-    <!-- BARRA DE NAVEGAÇÃO -->
+    <!-- NAV -->
     <nav id="bottom-nav" class="bottom-nav hidden">
         <div class="nav-item active" id="nav-home" onclick="navigateTo('screen-feed')">
-            <span class="nav-icon"><span class="material-symbols-outlined">home</span></span>
-            <span>Início</span>
+            <span class="material-symbols-outlined nav-icon">home</span><span>Início</span>
         </div>
         <div class="nav-item" id="nav-communities" onclick="navigateTo('screen-communities')">
-            <span class="nav-icon"><span class="material-symbols-outlined">groups</span></span>
-            <span>Comunidades</span>
+            <span class="material-symbols-outlined nav-icon">groups</span><span>Comunidades</span>
         </div>
         <div class="nav-item" id="nav-events" onclick="navigateTo('screen-my-events')">
-            <span class="nav-icon"><span class="material-symbols-outlined">trophy</span></span>
-            <span>Times</span>
+            <span class="material-symbols-outlined nav-icon">trophy</span><span>Times</span>
         </div>
         <div class="nav-item" id="nav-profile" onclick="navigateTo('screen-profile')">
-            <span class="nav-icon"><span class="material-symbols-outlined">person</span></span>
-            <span>Perfil</span>
+            <span class="material-symbols-outlined nav-icon">person</span><span>Perfil</span>
         </div>
-        <!-- HU 14: Item Admin -->
         <div class="nav-item hidden" id="nav-admin" onclick="navigateTo('screen-admin-panel')">
-            <span class="nav-icon"><span class="material-symbols-outlined">admin_panel_settings</span></span>
-            <span>Admin</span>
+            <span class="material-symbols-outlined nav-icon">admin_panel_settings</span><span>Admin</span>
         </div>
     </nav>
 
 </div>
 
-<!-- Script Principal -->
 <script src="script.js"></script>
 </body>
 </html>
